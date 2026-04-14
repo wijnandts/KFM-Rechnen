@@ -28,7 +28,7 @@
     <div class="card">
         <h1>Sim-Engineer Dreisatz-Modul</h1>
         <div class="nav">
-            <button onclick="changeMode('prop', this)" class="active">Proportional</button>
+            <button onclick="changeMode('prop', this)" id="default-btn" class="active">Proportional</button>
             <button onclick="changeMode('anti', this)">Antiproportional</button>
             <button onclick="changeMode('mix', this)">Zusammengesetzt</button>
         </div>
@@ -51,8 +51,8 @@
 </div>
 
 <script>
-    let mode = 'prop';
-    let target = 0;
+    let currentMode = 'prop';
+    let targetValue = 0;
 
     const scenarios = {
         prop: [
@@ -73,44 +73,48 @@
     };
 
     function changeMode(m, btn) {
-        mode = m;
+        currentMode = m;
         document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         next();
     }
 
+    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
+
     function next() {
-        document.getElementById('res').style.display = 'none';
+        const resDiv = document.getElementById('res');
+        resDiv.style.display = 'none';
         document.getElementById('val').value = '';
-        const list = scenarios[mode];
+        
+        const list = scenarios[currentMode];
         const sc = list[Math.floor(Math.random() * list.length)];
         
         let a = rand(5, 50), b = rand(10, 100), c = rand(5, 80), d = rand(5, 50), e = rand(2, 20);
         
         let text = sc.s.replace('{a}', a).replace('{b}', b).replace('{c}', c).replace('{d}', d).replace('{e}', e);
         document.getElementById('quest').innerText = text;
-        target = (mode === 'mix') ? sc.f(a,b,c,d,e) : sc.f(a,b,c);
+        
+        targetValue = (currentMode === 'mix') ? sc.f(a,b,c,d,e) : sc.f(a,b,c);
     }
-
-    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
 
     function verify() {
         const user = parseFloat(document.getElementById('val').value);
         const r = document.getElementById('res');
         r.style.display = 'block';
         
-        if(Math.abs(user - target) < 0.2) {
+        if(!isNaN(user) && Math.abs(user - targetValue) < 0.2) {
             r.style.background = 'rgba(16, 185, 129, 0.2)';
-            r.style.color = var(--ok);
-            r.innerText = "Korrekt kalkuliert! Ergebnis: " + target.toFixed(2);
+            r.style.color = '#10b981';
+            r.innerText = "Korrekt kalkuliert! Ergebnis: " + targetValue.toFixed(2);
         } else {
             r.style.background = 'rgba(244, 63, 94, 0.2)';
             r.style.color = '#f43f5e';
-            r.innerText = "Fehler in der Matrix. Korrekt: " + target.toFixed(2);
+            r.innerText = "Fehler in der Matrix. Korrekt wäre: " + targetValue.toFixed(2);
         }
     }
 
-    next();
+    // Sofortstart
+    window.onload = next;
 </script>
 </body>
 </html>
