@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Maximaler Dreisatz-Trainer Pro</title>
+    <style>
+        :root { --bg: #0a0f18; --card: #161e2d; --acc: #38bdf8; --txt: #e2e8f0; --ok: #10b981; --err: #f43f5e; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--txt); display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
+        .wrapper { width: 100%; max-width: 850px; }
+        .card { background: var(--card); border-radius: 16px; padding: 3rem; border: 1px solid #2d3748; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+        h1 { font-size: 1.5rem; color: var(--acc); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 30px; border-left: 4px solid var(--acc); padding-left: 15px; }
+        .nav { display: flex; gap: 10px; margin-bottom: 30px; }
+        .nav button { flex: 1; background: #2d3748; border: none; color: #94a3b8; padding: 12px; cursor: pointer; border-radius: 8px; font-weight: 600; transition: 0.3s; }
+        .nav button.active { background: var(--acc); color: var(--bg); box-shadow: 0 0 15px rgba(56,189,248,0.4); }
+        .display { background: rgba(0,0,0,0.3); padding: 25px; border-radius: 12px; font-size: 1.3rem; line-height: 1.6; margin-bottom: 30px; min-height: 100px; border: 1px dashed #475569; }
+        .controls { display: grid; grid-template-columns: 1fr auto auto; gap: 15px; }
+        input { background: #0f172a; border: 2px solid #334155; color: white; padding: 15px; border-radius: 8px; font-size: 1.2rem; width: 100%; }
+        input:focus { border-color: var(--acc); outline: none; }
+        .btn-check { background: var(--ok); color: white; padding: 0 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-next { background: #475569; color: white; padding: 0 20px; border-radius: 8px; border: none; cursor: pointer; }
+        #res { margin-top: 25px; padding: 20px; border-radius: 8px; display: none; font-weight: 500; }
+        .hint { margin-top: 40px; font-size: 0.85rem; color: #64748b; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="card">
+        <h1>Sim-Engineer Dreisatz-Modul</h1>
+        <div class="nav">
+            <button onclick="changeMode('prop', this)" class="active">Proportional</button>
+            <button onclick="changeMode('anti', this)">Antiproportional</button>
+            <button onclick="changeMode('mix', this)">Zusammengesetzt</button>
+        </div>
+
+        <div id="quest" class="display">Lade Trainingsdaten...</div>
+
+        <div class="controls">
+            <input type="number" id="val" placeholder="Ergebnis eingeben..." step="0.01">
+            <button class="btn-check" onclick="verify()">Prüfen</button>
+            <button class="btn-next" onclick="next()">→</button>
+        </div>
+
+        <div id="res"></div>
+
+        <div class="hint">
+            <strong>Technik-Notiz:</strong> Bei zusammengesetzten Aufgaben alle Faktoren einzeln prüfen. 
+            Ist das Verhältnis zum Zielwert "je mehr desto mehr" (Zähler) oder "je mehr desto weniger" (Nenner)?
+        </div>
+    </div>
+</div>
+
+<script>
+    let mode = 'prop';
+    let target = 0;
+
+    const scenarios = {
+        prop: [
+            { s: "{a} kg Kaffee ergeben {b} kg Röstkaffee. Wie viel Rohkaffee braucht man für {c} kg Röstkaffee?", f: (a,b,c) => (a/b)*c },
+            { s: "{a} m Stoff kosten {b} €. Ein Kunde möchte {c} m kaufen. Preis?", f: (a,b,c) => (b/a)*c },
+            { s: "Bezugskosten für {a} kg Ware sind {b} €. Anteilige Kosten für {c} kg?", f: (a,b,c) => (b/a)*c }
+        ],
+        anti: [
+            { s: "Vorrat reicht für {a} Personen {b} Tage. Wie lange reicht er für {c} Personen?", f: (a,b,c) => (a*b)/c },
+            { s: "Eine Strecke wird bei {a} km/h in {b} h geschafft. Zeit bei {c} km/h?", f: (a,b,c) => (a*b)/c },
+            { s: "{a} Mitarbeiter brauchen {b} Tage. Wie viele Mitarbeiter braucht man für {c} Tage?", f: (a,b,c) => (a*b)/c }
+        ],
+        mix: [
+            { s: "{a} Arbeiter bauen in {b} Tagen {c} m Mauer. Wie viele Arbeiter für {d} m in {e} Tagen?", f: (a,b,c,d,e) => (a*b/c)*(d/e) },
+            { s: "{a} Lkw transportieren in {b} Tagen {c} t. Wie viele t schaffen {d} Lkw in {e} Tagen?", f: (a,b,c,d,e) => (c/(a*b))*(d*e) },
+            { s: "{a} Personen verbrauchen in {b} Tagen {c} Liter Wasser. Verbrauch bei {d} Personen in {e} Tagen?", f: (a,b,c,d,e) => (c/(a*b))*(d*e) }
+        ]
+    };
+
+    function changeMode(m, btn) {
+        mode = m;
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        next();
+    }
+
+    function next() {
+        document.getElementById('res').style.display = 'none';
+        document.getElementById('val').value = '';
+        const list = scenarios[mode];
+        const sc = list[Math.floor(Math.random() * list.length)];
+        
+        let a = rand(5, 50), b = rand(10, 100), c = rand(5, 80), d = rand(5, 50), e = rand(2, 20);
+        
+        let text = sc.s.replace('{a}', a).replace('{b}', b).replace('{c}', c).replace('{d}', d).replace('{e}', e);
+        document.getElementById('quest').innerText = text;
+        target = (mode === 'mix') ? sc.f(a,b,c,d,e) : sc.f(a,b,c);
+    }
+
+    function rand(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
+
+    function verify() {
+        const user = parseFloat(document.getElementById('val').value);
+        const r = document.getElementById('res');
+        r.style.display = 'block';
+        
+        if(Math.abs(user - target) < 0.2) {
+            r.style.background = 'rgba(16, 185, 129, 0.2)';
+            r.style.color = var(--ok);
+            r.innerText = "Korrekt kalkuliert! Ergebnis: " + target.toFixed(2);
+        } else {
+            r.style.background = 'rgba(244, 63, 94, 0.2)';
+            r.style.color = '#f43f5e';
+            r.innerText = "Fehler in der Matrix. Korrekt: " + target.toFixed(2);
+        }
+    }
+
+    next();
+</script>
+</body>
+</html>
