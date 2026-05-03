@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  MATHEMATIK – PROZENTRECHNUNG | Berufskolleg NRW
+  ============================================================
+  Datei:        mathematik-prozentrechnung.html
+  Version:      1.1.0
+  Datum:        2025-05-03
+  Fach:         Mathematik
+  Bildungsgänge: BFS 1 | Einzelhandel (getrennt wählbar)
+  Zielgruppe:   Schülerinnen und Schüler BFS 1 und Einzelhandel
+  Ausgeschlossen: Wirtschaft, Politik, BFS 2, AVB, Rechnungswesen
+  Fächerübergreifend: Nein
+
+  Lernziele:
+    - Grundwert, Prozentwert, Prozentsatz benennen und erklären
+    - Drei Grundformeln anwenden
+    - Alltagsaufgaben (Rabatt, MwSt., Rückrechnung) lösen
+  Operatoren: nennen, erklären, berechnen, anwenden
+  Aufgaben:   40 (10 pro Stufe)
+  Taschenrechner: ausklappbar, mit Klammern und Brüchen
+
+  Lizenz Code:     MIT
+  Lizenz Inhalte:  CC BY-SA 4.0
+  ============================================================
+-->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Prozentrechnung | Mathematik BFS 1 &amp; Einzelhandel</title>
+<style>
+/* ── Design-Tokens ─────────────────────────────────────── */
+:root{
+  --bg:#f5f4f0; --surface:#fff;
+  --primary:#1a3a5c; --accent:#e85d26;
+  --bfs1:#1a6e3c; --eh:#7b2d8b;
+  --ok-bg:#ecfdf5; --ok-cl:#065f46;
+  --err-bg:#fff1f2; --err-cl:#9f1239;
+  --hint-bg:#eff6ff; --hint-cl:#1e40af;
+  --text:#1c1c1e; --muted:#6b7280;
+  --border:#e5e7eb; --radius:14px;
+  --shadow:0 4px 20px rgba(0,0,0,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+
+/* ── Header ────────────────────────────────────────────── */
+.app-header{background:var(--primary);color:#fff;padding:16px 18px;
+  display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
+.btn-back{background:rgba(255,255,255,.15);border:none;color:#fff;
+  font-size:.82rem;font-weight:700;padding:8px 12px;border-radius:8px;
+  cursor:pointer;text-decoration:none;font-family:inherit;white-space:nowrap}
+.btn-back:hover{background:rgba(255,255,255,.25)}
+.header-title{flex:1;font-size:clamp(.9rem,3vw,1.05rem);font-weight:700;line-height:1.3}
+.hbadges{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.hb{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.5px}
+.hb-bfs1{background:rgba(26,110,60,.4);color:#a7f3d0}
+.hb-eh{background:rgba(123,45,139,.4);color:#e9d5ff}
+
+/* ── Modus-Leiste ──────────────────────────────────────── */
+.mode-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
+.mode-btn{flex:1;padding:13px 8px;border:none;background:none;font-size:.86rem;
+  font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;
+  transition:color .15s,border-color .15s;font-family:inherit}
+.mode-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+
+/* ── Fortschritt ───────────────────────────────────────── */
+.prog-wrap{background:var(--border);height:5px}
+.prog-fill{height:5px;background:var(--primary);width:0%;transition:width .4s}
+
+/* ── Punkte & Badges ───────────────────────────────────── */
+.points-bar{display:flex;justify-content:space-between;align-items:center;
+  background:var(--surface);border-bottom:1px solid var(--border);padding:9px 18px;font-size:.82rem}
+.pts{display:flex;align-items:center;gap:5px;font-weight:700;color:var(--primary)}
+.bdg-row{display:flex;gap:5px}
+.bdg-e{font-size:1.15rem;transition:transform .3s}
+.bdg-l{font-size:1.15rem;filter:grayscale(1);opacity:.3}
+
+/* ── Filter-Leiste ─────────────────────────────────────── */
+.filter-bar{display:flex;gap:8px;padding:12px 18px;background:var(--surface);
+  border-bottom:1px solid var(--border);flex-wrap:wrap}
+.filter-btn{padding:7px 14px;border-radius:8px;border:2px solid var(--border);
+  background:var(--surface);font-size:.78rem;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .15s;color:var(--muted)}
+.filter-btn.active-bfs1{border-color:var(--bfs1);color:var(--bfs1);background:#e6f4ec}
+.filter-btn.active-eh{border-color:var(--eh);color:var(--eh);background:#f3e8f8}
+.filter-btn.active-both{border-color:var(--primary);color:var(--primary);background:#eff6ff}
+
+/* ── Container ─────────────────────────────────────────── */
+.container{max-width:700px;margin:0 auto;padding:20px 16px}
+
+/* ── Karte ─────────────────────────────────────────────── */
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:22px 20px;margin-bottom:18px;border:1px solid var(--border)}
+
+/* ── Theorie ───────────────────────────────────────────── */
+.acc-btn{width:100%;display:flex;justify-content:space-between;align-items:center;
+  background:none;border:none;font-family:inherit;font-size:.9rem;font-weight:700;
+  color:var(--primary);cursor:pointer;padding:0;text-align:left}
+.acc-arrow{transition:transform .2s;font-style:normal}
+.acc-btn[aria-expanded="true"] .acc-arrow{transform:rotate(180deg)}
+.acc-body{overflow:hidden;max-height:0;transition:max-height .35s ease}
+.acc-body.open{max-height:1200px}
+.theory h3{font-size:.88rem;color:var(--primary);margin:16px 0 8px;font-weight:700}
+.theory p{font-size:.88rem;line-height:1.65;margin-bottom:10px}
+.merksatz{background:var(--hint-bg);border-left:4px solid var(--primary);
+  border-radius:0 8px 8px 0;padding:13px 15px;margin:14px 0}
+.mk-label{font-size:.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  color:var(--primary);margin-bottom:5px}
+.merksatz p{font-size:.86rem;color:var(--hint-cl);margin:0;font-weight:600}
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+  gap:10px;margin:12px 0}
+.fc{background:#f8f9ff;border:1px solid #dde3ff;border-radius:10px;
+  padding:13px;text-align:center}
+.fc .fl{font-size:.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--muted);margin-bottom:7px}
+.fc .ff{font-size:.92rem;font-weight:800;font-family:'Courier New',monospace;
+  background:var(--primary);color:#fff;padding:7px 10px;border-radius:6px;
+  display:block;margin-bottom:7px}
+.fc .fe{font-size:.76rem;color:var(--muted);line-height:1.4}
+.glossar-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);
+  font-size:.84rem}
+.glossar-item:last-child{border-bottom:none}
+.gt{font-weight:700;color:var(--primary);min-width:105px}
+.gd{color:var(--text);line-height:1.5}
+
+/* ── Level-Tabs ────────────────────────────────────────── */
+.level-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.lvl-btn{padding:8px 13px;border-radius:8px;border:2px solid var(--border);
+  background:var(--surface);font-size:.78rem;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .15s;color:var(--muted);
+  display:flex;align-items:center;gap:5px}
+.lvl-btn.active{border-color:var(--primary);color:var(--primary);background:#eff6ff}
+.lvl-btn.done .ck{display:inline}
+.ck{display:none;color:var(--bfs1)}
+
+/* ── Aufgabenkarte ─────────────────────────────────────── */
+.task-card{background:var(--surface);border-radius:var(--radius);
+  box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
+.task-head{background:var(--primary);color:#fff;padding:13px 17px;
+  font-size:.78rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.task-nr{opacity:.7}
+.task-body{padding:18px 17px}
+.task-text{font-size:.94rem;line-height:1.65;margin-bottom:14px;font-weight:600}
+.task-ctx{font-size:.81rem;color:var(--muted);background:#fafafa;
+  border:1px solid var(--border);border-radius:8px;padding:11px;margin-bottom:14px;line-height:1.5}
+.input-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:11px}
+.task-input{flex:1;min-width:110px;padding:11px 13px;border:2px solid var(--border);
+  border-radius:8px;font-size:1rem;font-family:inherit;color:var(--text);
+  transition:border-color .15s}
+.task-input:focus{outline:none;border-color:var(--primary)}
+.task-input.correct{border-color:var(--ok-cl);background:var(--ok-bg)}
+.task-input.wrong{border-color:#e11d48;background:var(--err-bg)}
+.unit{font-size:.88rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.btn{padding:12px 18px;border:none;border-radius:9px;font-size:.88rem;
+  font-weight:700;cursor:pointer;font-family:inherit;
+  transition:opacity .15s,transform .1s;display:inline-flex;align-items:center;gap:5px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-success{background:var(--bfs1);color:#fff}
+.btn-hint{background:var(--hint-bg);color:var(--hint-cl);border:1px solid #bfdbfe}
+.btn-calc{background:#1c1c1e;color:#fff}
+.btn-sm{padding:8px 12px;font-size:.8rem}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.fb-box{border-radius:9px;padding:13px 15px;font-size:.86rem;line-height:1.55;
+  margin-top:13px;display:none}
+.fb-box.correct{display:block;background:var(--ok-bg);color:var(--ok-cl);border:1px solid #a7f3d0}
+.fb-box.wrong{display:block;background:var(--err-bg);color:var(--err-cl);border:1px solid #fecdd3}
+.fb-box strong{display:block;font-size:.92rem;margin-bottom:3px}
+.hint-box{background:var(--hint-bg);border:1px solid #bfdbfe;border-radius:9px;
+  padding:12px 14px;font-size:.83rem;color:var(--hint-cl);margin-top:11px;
+  display:none;line-height:1.55}
+.hint-box.visible{display:block}
+.hint-box strong{display:block;font-size:.78rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.sol-box{background:#f8f9fa;border:1px solid var(--border);border-radius:9px;
+  padding:13px 15px;font-size:.83rem;margin-top:11px;display:none;line-height:1.7}
+.sol-box.visible{display:block}
+.sol-box strong{color:var(--primary);display:block;font-size:.78rem;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.step{display:flex;gap:7px;margin-bottom:3px}
+.step-nr{font-weight:700;color:var(--primary);min-width:18px}
+.task-nav{display:flex;justify-content:space-between;align-items:center;
+  padding:11px 17px;background:#fafafa;border-top:1px solid var(--border)}
+.task-counter{font-size:.78rem;color:var(--muted);font-weight:600}
+
+/* ── Taschenrechner ────────────────────────────────────── */
+.calc-wrapper{margin-top:13px;display:none}
+.calc-wrapper.visible{display:block}
+.calc{background:#1c1c1e;border-radius:12px;padding:14px;
+  max-width:340px;margin:0 auto;font-family:'Courier New',monospace}
+.calc-display{background:#0a0a0a;border-radius:8px;padding:12px 14px;
+  margin-bottom:11px;min-height:54px;text-align:right}
+.calc-expr{font-size:.75rem;color:#6b7280;min-height:18px;word-break:break-all;line-height:1.3}
+.calc-val{font-size:1.6rem;color:#f5f4f0;font-weight:700;line-height:1.2;
+  word-break:break-all}
+.calc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.cb{padding:11px 4px;border:none;border-radius:8px;font-size:.88rem;font-weight:700;
+  cursor:pointer;font-family:'Courier New',monospace;transition:filter .1s;text-align:center}
+.cb:active{filter:brightness(1.3)}
+.cb-num{background:#374151;color:#f5f4f0}
+.cb-op{background:#e85d26;color:#fff}
+.cb-fn{background:#2d3a4a;color:#a7f3d0;font-size:.78rem}
+.cb-eq{background:var(--bfs1);color:#fff}
+.cb-clr{background:#7f1d1d;color:#fca5a5}
+.cb-span2{grid-column:span 2}
+.cb-span3{grid-column:span 3}
+.calc-copy-hint{font-size:.7rem;color:#6b7280;text-align:center;
+  margin-top:8px;font-family:sans-serif}
+
+/* ── Abschluss-Karte ───────────────────────────────────── */
+.finish-card{text-align:center;padding:30px 22px}
+.finish-icon{font-size:3rem;margin-bottom:10px}
+.finish-card h2{color:var(--bfs1);margin-bottom:10px;font-size:1.1rem}
+.finish-card p{font-size:.88rem;color:var(--muted);margin-bottom:20px;line-height:1.6}
+
+/* ── Prüfungsmodus ─────────────────────────────────────── */
+.result-card{text-align:center;padding:30px 22px}
+.result-score{font-size:3.2rem;font-weight:900;color:var(--primary);line-height:1;margin-bottom:7px}
+.result-label{font-size:.9rem;color:var(--muted);margin-bottom:18px}
+.result-bar-wrap{background:var(--border);border-radius:99px;height:13px;overflow:hidden;margin-bottom:18px}
+.result-bar-fill{height:13px;border-radius:99px;background:var(--primary);transition:width .6s}
+.result-msg{font-size:1rem;font-weight:700;margin-bottom:22px}
+.sol-item{display:flex;gap:9px;align-items:flex-start;padding:9px 0;
+  border-bottom:1px solid var(--border);font-size:.83rem;line-height:1.5}
+.sol-item:last-child{border-bottom:none}
+.sol-icon{font-size:.95rem;flex-shrink:0;margin-top:2px}
+.sol-text strong{display:block;font-weight:700;color:var(--text)}
+.sol-text span{color:var(--muted)}
+.res-solutions{text-align:left;margin-top:18px}
+.res-solutions h3{font-size:.82rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--muted);margin-bottom:10px}
+
+/* ── Lehrkraft ─────────────────────────────────────────── */
+.teacher-toggle{display:block;margin:28px auto 0;background:none;
+  border:1px solid var(--border);color:var(--muted);font-size:.76rem;
+  padding:7px 15px;border-radius:8px;cursor:pointer;font-family:inherit}
+.teacher-toggle:hover{background:var(--border)}
+.teacher-panel{display:none;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin:10px 16px 0;
+  max-width:668px;margin-left:auto;margin-right:auto;
+  font-size:.82rem;line-height:1.7}
+.teacher-panel h2{font-size:.88rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--primary);margin-bottom:13px}
+.teacher-panel table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:.8rem}
+.teacher-panel th{text-align:left;padding:7px 9px;background:#f5f4f0;
+  font-weight:700;color:var(--muted);border:1px solid var(--border)}
+.teacher-panel td{padding:7px 9px;border:1px solid var(--border);vertical-align:top}
+.reset-btn{margin-top:11px;background:#fee2e2;color:#b91c1c;border:none;
+  padding:9px 17px;border-radius:8px;font-weight:700;cursor:pointer;
+  font-size:.8rem;font-family:inherit}
+.reset-btn:hover{background:#fca5a5}
+
+/* ── Utility ───────────────────────────────────────────── */
+.hidden{display:none!important}
+.text-center{text-align:center}
+.mt-14{margin-top:14px}
+@media(max-width:480px){
+  .formula-grid{grid-template-columns:1fr}
+  .calc-grid{grid-template-columns:repeat(4,1fr)}
+  .cb-span2{grid-column:span 1}
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ───────────────────────────────────────────── -->
+<header class="app-header" role="banner">
+  <a href="index-mathematik.html" class="btn-back" aria-label="Zurück zum Portal">← Portal</a>
+  <div class="header-title">
+    Prozentrechnung
+    <div class="hbadges">
+      <span class="hb hb-bfs1">BFS 1</span>
+      <span class="hb hb-eh">Einzelhandel</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── MODUS ────────────────────────────────────────────── -->
+<div class="mode-bar" role="tablist">
+  <button class="mode-btn active" id="btn-learn" role="tab" aria-selected="true"
+          onclick="switchMode('learn')">📖 Lernmodus</button>
+  <button class="mode-btn" id="btn-exam" role="tab" aria-selected="false"
+          onclick="switchMode('exam')">✏️ Prüfungsmodus</button>
+</div>
+
+<!-- ── FORTSCHRITT ──────────────────────────────────────── -->
+<div class="prog-wrap" role="progressbar" aria-label="Fortschritt"
+     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="prog-fill" id="prog-fill"></div>
+</div>
+
+<!-- ── PUNKTE & BADGES ──────────────────────────────────── -->
+<div class="points-bar" aria-live="polite">
+  <div class="pts">⭐ <span id="pts-disp">0 Punkte</span></div>
+  <div class="bdg-row">
+    <span id="b1" class="bdg-l" title="Einstieg gemeistert">🥉</span>
+    <span id="b2" class="bdg-l" title="Training abgeschlossen">🥈</span>
+    <span id="b3" class="bdg-l" title="Prüfungsfit">🥇</span>
+    <span id="b4" class="bdg-l" title="Experte">🏆</span>
+  </div>
+</div>
+
+<!-- ── FILTER-LEISTE ────────────────────────────────────── -->
+<div class="filter-bar" role="group" aria-label="Bildungsgang wählen">
+  <button class="filter-btn active-both" id="fb-both"
+          onclick="setFilter('both')">🔵🟣 Alle</button>
+  <button class="filter-btn" id="fb-bfs1"
+          onclick="setFilter('bfs1')">🟢 BFS 1</button>
+  <button class="filter-btn" id="fb-eh"
+          onclick="setFilter('eh')">🟣 Einzelhandel</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     LERNMODUS
+══════════════════════════════════════════════════════ -->
+<div id="panel-learn" role="tabpanel">
+<div class="container">
+
+  <!-- Theorie -->
+  <div class="card">
+    <button class="acc-btn" onclick="toggleAcc(this)" aria-expanded="false" aria-controls="theory-body">
+      <span>📐 Theorie: Prozentrechnung</span>
+      <span class="acc-arrow" aria-hidden="true">▼</span>
+    </button>
+    <div class="acc-body" id="theory-body">
+      <div class="theory" style="padding-top:16px">
+        <div class="merksatz">
+          <div class="mk-label">Merksatz</div>
+          <p>Prozentrechnung zeigt, wie groß ein Teil (Prozentwert W) im Verhältnis
+             zum Ganzen (Grundwert G) ist. Das Verhältnis heißt Prozentsatz p&nbsp;%.</p>
+        </div>
+        <h3>Die drei Grundformeln</h3>
+        <div class="formula-grid">
+          <div class="fc">
+            <div class="fl">Prozentwert W</div>
+            <span class="ff">W = G × p%</span>
+            <div class="fe">Welcher Betrag sind z.&nbsp;B. 20&nbsp;% von 80&nbsp;€?</div>
+          </div>
+          <div class="fc">
+            <div class="fl">Grundwert G</div>
+            <span class="ff">G = W ÷ p%</span>
+            <div class="fe">Was war der Ausgangspreis, wenn 16&nbsp;€ = 20&nbsp;%?</div>
+          </div>
+          <div class="fc">
+            <div class="fl">Prozentsatz p%</div>
+            <span class="ff">p% = W ÷ G</span>
+            <div class="fe">Wie viel % sind 16&nbsp;€ von 80&nbsp;€?</div>
+          </div>
+        </div>
+        <h3>Beispiel: Rabatt berechnen</h3>
+        <p>Jacke kostet 80&nbsp;€, Rabatt 20&nbsp;%.<br>
+           Schritt 1: W = 80 × 0,20 = <strong>16&nbsp;€</strong> Rabatt<br>
+           Schritt 2: Endpreis = 80 − 16 = <strong>64&nbsp;€</strong></p>
+        <h3>Beispiel: Rückrechnung</h3>
+        <p>Hose kostet nach 25&nbsp;% Rabatt noch 60&nbsp;€. Originalpreis?<br>
+           60&nbsp;€ = 75&nbsp;% → G = 60 ÷ 0,75 = <strong>80&nbsp;€</strong></p>
+        <h3>Glossar</h3>
+        <div class="glossar-item"><span class="gt">Grundwert G</span>
+          <span class="gd">Das Ganze = 100&nbsp;%. Ausgangswert jeder Rechnung.</span></div>
+        <div class="glossar-item"><span class="gt">Prozentwert W</span>
+          <span class="gd">Der berechnete Teilbetrag (z.&nbsp;B. in €).</span></div>
+        <div class="glossar-item"><span class="gt">Prozentsatz p%</span>
+          <span class="gd">Verhältnis in Prozent (z.&nbsp;B. 20&nbsp;%).</span></div>
+        <div class="glossar-item"><span class="gt">Rabatt</span>
+          <span class="gd">Preisnachlass in % auf den ursprünglichen Preis.</span></div>
+        <div class="glossar-item"><span class="gt">Mehrwertsteuer</span>
+          <span class="gd">Steuer auf den Nettopreis. Regelsteuersatz 19&nbsp;%, ermäßigt 7&nbsp;%.</span></div>
+        <div class="glossar-item"><span class="gt">Nettopreis</span>
+          <span class="gd">Preis ohne Mehrwertsteuer (= 100&nbsp;% Basis).</span></div>
+        <div class="glossar-item"><span class="gt">Bruttopreis</span>
+          <span class="gd">Preis inkl. Mehrwertsteuer (z.&nbsp;B. 119&nbsp;% bei 19&nbsp;% MwSt.).</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stufen-Tabs -->
+  <div class="level-tabs" role="group" aria-label="Schwierigkeitsstufe">
+    <button class="lvl-btn active" id="lvl-btn-0" onclick="selectLevel(0)">
+      <span class="ck" aria-hidden="true">✓</span>① Einstieg</button>
+    <button class="lvl-btn" id="lvl-btn-1" onclick="selectLevel(1)">
+      <span class="ck" aria-hidden="true">✓</span>② Training</button>
+    <button class="lvl-btn" id="lvl-btn-2" onclick="selectLevel(2)">
+      <span class="ck" aria-hidden="true">✓</span>③ Prüfung</button>
+    <button class="lvl-btn" id="lvl-btn-3" onclick="selectLevel(3)">
+      <span class="ck" aria-hidden="true">✓</span>④ Bonus</button>
+  </div>
+
+  <!-- Aufgabenbereich -->
+  <div id="task-area"></div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PRÜFUNGSMODUS
+══════════════════════════════════════════════════════ -->
+<div id="panel-exam" class="hidden" role="tabpanel">
+<div class="container">
+
+  <div class="card" id="exam-start">
+    <h2 style="color:var(--primary);margin-bottom:11px;font-size:1.05rem">✏️ Prüfungsmodus</h2>
+    <p style="font-size:.88rem;line-height:1.65;margin-bottom:14px">
+      Du bearbeitest <strong>10 Aufgaben</strong> ohne Hilfen.<br>
+      Der Taschenrechner steht dir zur Verfügung.<br>
+      Am Ende siehst du Ergebnis und Musterlösungen.
+    </p>
+    <div class="merksatz">
+      <div class="mk-label">Hinweis</div>
+      <p>Kein Tipp, kein Rechenweg während der Prüfung. Erst nach dem Abschluss.</p>
+    </div>
+    <div class="btn-row mt-14">
+      <button class="btn btn-primary" onclick="startExam()">Prüfung starten →</button>
+    </div>
+  </div>
+
+  <div id="exam-task-area" class="hidden"></div>
+
+  <div class="card result-card hidden" id="exam-result">
+    <div class="result-score" id="res-score">–</div>
+    <div class="result-label" id="res-label">von 10 Aufgaben richtig</div>
+    <div class="result-bar-wrap">
+      <div class="result-bar-fill" id="res-bar"></div>
+    </div>
+    <div class="result-msg" id="res-msg"></div>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-primary" onclick="restartExam()">Erneut versuchen</button>
+      <button class="btn btn-hint" onclick="switchMode('learn')">Zum Lernmodus</button>
+    </div>
+    <div class="res-solutions" id="res-solutions"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ── LEHRKRAFT ─────────────────────────────────────────── -->
+<button class="teacher-toggle" onclick="toggleTeacher()"
+        aria-expanded="false" aria-controls="teacher-panel">Für Lehrkräfte ▾</button>
+
+<div class="teacher-panel" id="teacher-panel" role="region" aria-label="Lehrkraft-Modus">
+  <h2>🔑 Lehrkraft-Modus</h2>
+  <p><strong>App:</strong> Mathematik – Prozentrechnung<br>
+     <strong>Version:</strong> 1.1.0 | <strong>Stand:</strong> 2025-05-03<br>
+     <strong>Bildungsgänge:</strong> BFS 1, Einzelhandel (getrennt filterbar)<br>
+     <strong>Aufgaben:</strong> 40 gesamt (10 pro Stufe)<br>
+     <strong>Ausgeschlossen:</strong> Wirtschaft, Politik, BFS 2, AVB, Rechnungswesen<br>
+     <strong>Fächerübergreifend:</strong> Nein</p>
+  <p><strong>Lernziele:</strong> Grundwert, Prozentwert, Prozentsatz benennen, Formeln anwenden,
+     Alltagsaufgaben lösen (Rabatt, MwSt., Rückrechnung).<br>
+     <strong>Operatoren:</strong> nennen, erklären, berechnen, anwenden</p>
+  <p><strong>Datenschutz:</strong> Nur Lernfortschritt (Punkte, Stufen, Badges) lokal im Browser
+     (localStorage, Schlüssel: <code>mathe-prozent</code>). Keine personenbezogenen Daten.</p>
+  <p><strong>Erweiterung:</strong> Neue Aufgaben im JS-Array <code>AUFGABEN</code> ergänzen.
+     Schema: <code>{stufe, fach, text, kontext, formel, schritte[], antwort, einheit, toleranz}</code>.</p>
+  <p><strong>Lizenz Code:</strong> MIT | <strong>Lizenz Inhalte:</strong> CC BY-SA 4.0</p>
+  <p><strong>Lehrplanbezug:</strong> Fachlich begründet, aber nicht lehrplanverbindlich.
+     Bitte mit aktuellem Lehrplan NRW abgleichen.</p>
+  <p><strong>Aufgabenübersicht:</strong></p>
+  <table><thead><tr><th>Stufe</th><th>Fach</th><th>Aufgabe (Kurzform)</th><th>Lösung</th></tr></thead>
+    <tbody id="teacher-table"></tbody></table>
+  <button class="reset-btn" onclick="resetApp()">⚠️ Lernstand zurücksetzen</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+/* ============================================================
+   AUFGABEN – 40 Stück (10 pro Stufe, gemischt BFS1 / EH)
+   Fach-Werte: "BFS 1" | "Einzelhandel" | "beide"
+   p% in Formeln immer als Dezimalzahl formuliert.
+   Alle Lösungen wurden manuell geprüft.
+============================================================ */
+const AUFGABEN = [
+
+/* ── STUFE 0: Einstieg ────────────────────────────────── */
+{stufe:0,fach:"beide",
+ text:"Ein Buch kostet 20&nbsp;€. Der Rabatt beträgt 10&nbsp;%. Berechne den Rabattbetrag.",
+ kontext:"G = 20 €, p% = 10 %",
+ formel:"W = G × p%  →  W = 20 × 0,10",
+ schritte:["G = 20 €, p% = 10 % = 0,10","W = 20 × 0,10 = 2 €","Rabattbetrag: 2 €"],
+ antwort:2, einheit:"€", toleranz:0.05},
+
+{stufe:0,fach:"beide",
+ text:"Von 50 Artikeln im Lager sind 10 beschädigt. Wie viel Prozent sind beschädigt?",
+ kontext:"G = 50, W = 10",
+ formel:"p% = W ÷ G  →  p% = 10 ÷ 50",
+ schritte:["G = 50, W = 10","p% = 10 ÷ 50 = 0,20 → 20 %","20 % sind beschädigt."],
+ antwort:20, einheit:"%", toleranz:0.1},
+
+{stufe:0,fach:"beide",
+ text:"Ein Prozentsatz von 5&nbsp;% von 300&nbsp;€ – wie viel Euro sind das?",
+ kontext:"G = 300 €, p% = 5 %",
+ formel:"W = G × p%  →  W = 300 × 0,05",
+ schritte:["G = 300 €, p% = 5 % = 0,05","W = 300 × 0,05 = 15 €","Ergebnis: 15 €"],
+ antwort:15, einheit:"€", toleranz:0.05},
+
+{stufe:0,fach:"BFS 1",
+ text:"Lena spart 25&nbsp;€ von ihrem Taschengeld von 100&nbsp;€. Wie viel Prozent spart sie?",
+ kontext:"G = 100 €, W = 25 €",
+ formel:"p% = W ÷ G  →  p% = 25 ÷ 100",
+ schritte:["p% = 25 ÷ 100 = 0,25 → 25 %","Lena spart 25 %."],
+ antwort:25, einheit:"%", toleranz:0.1},
+
+{stufe:0,fach:"Einzelhandel",
+ text:"Ein Shirt hat einen Aufkleber '20&nbsp;% Rabatt' auf 40&nbsp;€. Wie viel kostet es nach dem Rabatt?",
+ kontext:"Rabattbetrag erst berechnen, dann abziehen.",
+ formel:"W = 40 × 0,20; Endpreis = 40 − W",
+ schritte:["Rabatt: W = 40 × 0,20 = 8 €","Endpreis: 40 − 8 = 32 €"],
+ antwort:32, einheit:"€", toleranz:0.05},
+
+{stufe:0,fach:"beide",
+ text:"12 von 60 Schülerinnen und Schülern kommen zu spät. Wie viel Prozent ist das?",
+ kontext:"G = 60, W = 12",
+ formel:"p% = W ÷ G  →  12 ÷ 60",
+ schritte:["p% = 12 ÷ 60 = 0,20 → 20 %","20 % kommen zu spät."],
+ antwort:20, einheit:"%", toleranz:0.1},
+
+{stufe:0,fach:"Einzelhandel",
+ text:"Ein Produkt kostet netto 50&nbsp;€. Berechne die Mehrwertsteuer bei 19&nbsp;%.",
+ kontext:"MwSt = Nettopreis × 0,19",
+ formel:"MwSt = 50 × 0,19",
+ schritte:["MwSt = 50 × 0,19 = 9,50 €","Die MwSt beträgt 9,50 €."],
+ antwort:9.5, einheit:"€", toleranz:0.05},
+
+{stufe:0,fach:"BFS 1",
+ text:"Ein Kurs kostet 200&nbsp;€. Er wird um 15&nbsp;% ermäßigt. Wie hoch ist der Rabattbetrag?",
+ kontext:"G = 200 €, p% = 15 %",
+ formel:"W = 200 × 0,15",
+ schritte:["W = 200 × 0,15 = 30 €","Rabattbetrag: 30 €"],
+ antwort:30, einheit:"€", toleranz:0.05},
+
+{stufe:0,fach:"beide",
+ text:"Ein Produkt kostet 80&nbsp;€. Wie viel sind 50&nbsp;% davon?",
+ kontext:"G = 80 €, p% = 50 %",
+ formel:"W = 80 × 0,50",
+ schritte:["W = 80 × 0,50 = 40 €","50 % von 80 € sind 40 €."],
+ antwort:40, einheit:"€", toleranz:0.05},
+
+{stufe:0,fach:"Einzelhandel",
+ text:"Von 200 verkauften Artikeln sind 30 zurückgegeben worden. Wie viel Prozent wurden zurückgegeben?",
+ kontext:"G = 200, W = 30",
+ formel:"p% = 30 ÷ 200",
+ schritte:["p% = 30 ÷ 200 = 0,15 → 15 %","15 % wurden zurückgegeben."],
+ antwort:15, einheit:"%", toleranz:0.1},
+
+/* ── STUFE 1: Training ────────────────────────────────── */
+{stufe:1,fach:"Einzelhandel",
+ text:"Ein Paar Schuhe kostet 120&nbsp;€. Der Händler gewährt 15&nbsp;% Rabatt. Wie hoch ist der Endpreis?",
+ kontext:"Rabatt berechnen, dann vom Preis abziehen.",
+ formel:"Endpreis = G × (1 − p%)",
+ schritte:["Rabatt: 120 × 0,15 = 18 €","Endpreis: 120 − 18 = 102 €"],
+ antwort:102, einheit:"€", toleranz:0.05},
+
+{stufe:1,fach:"Einzelhandel",
+ text:"Nettopreis eines Fernsehers: 850&nbsp;€, MwSt. 19&nbsp;%. Wie hoch ist der Bruttopreis?",
+ kontext:"Brutto = Netto × 1,19",
+ formel:"Brutto = 850 × 1,19",
+ schritte:["MwSt: 850 × 0,19 = 161,50 €","Brutto: 850 + 161,50 = 1.011,50 €","Oder: 850 × 1,19 = 1.011,50 €"],
+ antwort:1011.5, einheit:"€", toleranz:0.05},
+
+{stufe:1,fach:"BFS 1",
+ text:"Julia verdient 1.800&nbsp;€ brutto. 22&nbsp;% gehen als Abzüge ab. Wie viel bleibt netto?",
+ kontext:"Abzüge berechnen, dann abziehen.",
+ formel:"Netto = 1.800 × (1 − 0,22)",
+ schritte:["Abzüge: 1.800 × 0,22 = 396 €","Netto: 1.800 − 396 = 1.404 €"],
+ antwort:1404, einheit:"€", toleranz:0.5},
+
+{stufe:1,fach:"beide",
+ text:"Ein Kleidungsstück hat nach 30&nbsp;% Rabatt einen Preis von 140&nbsp;€. Wie hoch war der Originalpreis?",
+ kontext:"Nach Rabatt sind noch 70 % des Preises übrig.",
+ formel:"G = Endpreis ÷ (1 − 0,30) = 140 ÷ 0,70",
+ schritte:["100 % − 30 % = 70 % übrig","140 € = 70 %","G = 140 ÷ 0,70 = 200 €"],
+ antwort:200, einheit:"€", toleranz:0.05},
+
+{stufe:1,fach:"Einzelhandel",
+ text:"Ein Laden hat 480 Artikel verkauft. 8&nbsp;% davon waren Sonderangebote. Wie viele Artikel waren das?",
+ kontext:"G = 480 Artikel, p% = 8 %",
+ formel:"W = 480 × 0,08",
+ schritte:["W = 480 × 0,08 = 38,4 ≈ 38 Artikel","Ca. 38 Artikel waren Sonderangebote."],
+ antwort:38.4, einheit:"Stück", toleranz:0.5},
+
+{stufe:1,fach:"BFS 1",
+ text:"Tim hat 320&nbsp;€ gespart. Das sind 40&nbsp;% seines Monatsgehalts. Wie hoch ist sein Monatsgehalt?",
+ kontext:"320 € = 40 %. Gesucht ist 100 %.",
+ formel:"G = W ÷ p% = 320 ÷ 0,40",
+ schritte:["G = 320 ÷ 0,40 = 800 €","Tims Gehalt beträgt 800 €."],
+ antwort:800, einheit:"€", toleranz:0.05},
+
+{stufe:1,fach:"Einzelhandel",
+ text:"Ein Artikel kostet 59,90&nbsp;€ inkl. 19&nbsp;% MwSt. Wie hoch ist der Nettopreis?",
+ kontext:"Brutto enthält 119 %. Netto = Brutto ÷ 1,19",
+ formel:"Netto = 59,90 ÷ 1,19",
+ schritte:["Netto = 59,90 ÷ 1,19 ≈ 50,34 €","Nettopreis: ca. 50,34 €"],
+ antwort:50.34, einheit:"€", toleranz:0.06},
+
+{stufe:1,fach:"BFS 1",
+ text:"Eine Klasse besteht aus 25 Schülerinnen und Schülern. 20&nbsp;% haben das Zertifikat bestanden. Wie viele sind das?",
+ kontext:"G = 25, p% = 20 %",
+ formel:"W = 25 × 0,20",
+ schritte:["W = 25 × 0,20 = 5","5 Schüler/innen haben bestanden."],
+ antwort:5, einheit:"Personen", toleranz:0.1},
+
+{stufe:1,fach:"beide",
+ text:"Ein Fahrrad kostet ursprünglich 650&nbsp;€. Im Sale wird es um 12&nbsp;% gesenkt. Was kostet es jetzt?",
+ kontext:"",
+ formel:"Endpreis = 650 × (1 − 0,12)",
+ schritte:["Rabatt: 650 × 0,12 = 78 €","Endpreis: 650 − 78 = 572 €"],
+ antwort:572, einheit:"€", toleranz:0.05},
+
+{stufe:1,fach:"Einzelhandel",
+ text:"Eine Kassiererin nimmt an einem Tag 3.200&nbsp;€ ein. 6,25&nbsp;% entfallen auf Sonderangebote. Wie viel Euro sind das?",
+ kontext:"G = 3.200 €, p% = 6,25 %",
+ formel:"W = 3.200 × 0,0625",
+ schritte:["W = 3.200 × 0,0625 = 200 €","200 € entfallen auf Sonderangebote."],
+ antwort:200, einheit:"€", toleranz:0.05},
+
+/* ── STUFE 2: Prüfungsvorbereitung ───────────────────── */
+{stufe:2,fach:"Einzelhandel",
+ text:"Ein Laptop kostet 1.190&nbsp;€ (inkl. 19&nbsp;% MwSt.). Wie hoch ist der Nettopreis?",
+ kontext:"Brutto = 119 % des Nettos. Netto = Brutto ÷ 1,19",
+ formel:"Netto = 1.190 ÷ 1,19",
+ schritte:["Netto = 1.190 ÷ 1,19 = 1.000 €","Nettopreis: 1.000 €"],
+ antwort:1000, einheit:"€", toleranz:0.05},
+
+{stufe:2,fach:"beide",
+ text:"Eine Hose kostet nach 25&nbsp;% Rabatt 60&nbsp;€. Wie hoch war der ursprüngliche Preis?",
+ kontext:"75 % des Originals sind übrig.",
+ formel:"G = 60 ÷ 0,75",
+ schritte:["100 % − 25 % = 75 % übrig","G = 60 ÷ 0,75 = 80 €","Originalpreis: 80 €"],
+ antwort:80, einheit:"€", toleranz:0.05},
+
+{stufe:2,fach:"BFS 1",
+ text:"Karins Gehalt steigt von 1.600&nbsp;€ auf 1.800&nbsp;€. Um wie viel Prozent steigt es?",
+ kontext:"p% = Veränderung ÷ Ausgangswert",
+ formel:"p% = (1.800 − 1.600) ÷ 1.600",
+ schritte:["Veränderung: 1.800 − 1.600 = 200 €","p% = 200 ÷ 1.600 = 0,125 → 12,5 %","Das Gehalt steigt um 12,5 %."],
+ antwort:12.5, einheit:"%", toleranz:0.1},
+
+{stufe:2,fach:"Einzelhandel",
+ text:"Einkaufspreis: 240&nbsp;€. Verkaufspreis: 312&nbsp;€. Wie viel Prozent Aufschlag wurde kalkuliert (bezogen auf den EKP)?",
+ kontext:"Aufschlag% = (VKP − EKP) ÷ EKP × 100",
+ formel:"p% = (312 − 240) ÷ 240",
+ schritte:["Aufschlag: 312 − 240 = 72 €","p% = 72 ÷ 240 = 0,30 → 30 %","Aufschlag: 30 %"],
+ antwort:30, einheit:"%", toleranz:0.1},
+
+{stufe:2,fach:"BFS 1",
+ text:"Ein Kredit wird zu 4&nbsp;% Zinsen aufgenommen. Die jährlichen Zinsen betragen 160&nbsp;€. Wie hoch ist der Kreditbetrag?",
+ kontext:"160 € = 4 % des Kredits.",
+ formel:"G = W ÷ p% = 160 ÷ 0,04",
+ schritte:["G = 160 ÷ 0,04 = 4.000 €","Der Kreditbetrag beträgt 4.000 €."],
+ antwort:4000, einheit:"€", toleranz:0.5},
+
+{stufe:2,fach:"Einzelhandel",
+ text:"Ein Produkt mit 7&nbsp;% MwSt. kostet brutto 5,35&nbsp;€. Berechne den Nettopreis.",
+ kontext:"Netto = Brutto ÷ 1,07",
+ formel:"Netto = 5,35 ÷ 1,07",
+ schritte:["Netto = 5,35 ÷ 1,07 ≈ 5,00 €","Nettopreis: 5,00 €"],
+ antwort:5.0, einheit:"€", toleranz:0.06},
+
+{stufe:2,fach:"beide",
+ text:"Ein Preis wird erst um 20&nbsp;% erhöht und dann um 20&nbsp;% gesenkt. Ausgang: 100&nbsp;€. Was ist der Endpreis?",
+ kontext:"Achtung: Erst erhöhen (× 1,20), dann senken (× 0,80).",
+ formel:"Endpreis = 100 × 1,20 × 0,80",
+ schritte:["Nach Erhöhung: 100 × 1,20 = 120 €","Nach Senkung: 120 × 0,80 = 96 €","Endpreis: 96 € (nicht 100 €!)"],
+ antwort:96, einheit:"€", toleranz:0.05},
+
+{stufe:2,fach:"BFS 1",
+ text:"Mia spart monatlich 180&nbsp;€. Das entspricht 15&nbsp;% ihres Nettogehalts. Wie hoch ist ihr Nettogehalt?",
+ kontext:"180 € = 15 %",
+ formel:"G = 180 ÷ 0,15",
+ schritte:["G = 180 ÷ 0,15 = 1.200 €","Nettogehalt: 1.200 €"],
+ antwort:1200, einheit:"€", toleranz:0.05},
+
+{stufe:2,fach:"Einzelhandel",
+ text:"Ein Laden senkt seinen Preis um 18&nbsp;%. Der neue Preis beträgt 205&nbsp;€. Was war der alte Preis?",
+ kontext:"205 € = 82 % des alten Preises.",
+ formel:"G = 205 ÷ 0,82",
+ schritte:["100 % − 18 % = 82 %","G = 205 ÷ 0,82 = 250 €","Alter Preis: 250 €"],
+ antwort:250, einheit:"€", toleranz:0.05},
+
+{stufe:2,fach:"beide",
+ text:"Von 400 produzierten Waren sind 32 fehlerhaft. Berechne die Fehlerquote in Prozent.",
+ kontext:"G = 400, W = 32",
+ formel:"p% = 32 ÷ 400",
+ schritte:["p% = 32 ÷ 400 = 0,08 → 8 %","Fehlerquote: 8 %"],
+ antwort:8, einheit:"%", toleranz:0.1},
+
+/* ── STUFE 3: Bonus / Transfer ───────────────────────── */
+{stufe:3,fach:"Einzelhandel",
+ text:"Einkaufspreis 180&nbsp;€, Aufschlag 40&nbsp;%, danach 10&nbsp;% Rabatt. Was ist der Endverkaufspreis?",
+ kontext:"Schritt 1: Aufschlag berechnen. Schritt 2: Rabatt abziehen.",
+ formel:"VKP = 180 × 1,40 × 0,90",
+ schritte:["VKP vor Rabatt: 180 × 1,40 = 252 €","Nach 10 % Rabatt: 252 × 0,90 = 226,80 €","Endpreis: 226,80 €"],
+ antwort:226.8, einheit:"€", toleranz:0.1},
+
+{stufe:3,fach:"BFS 1",
+ text:"Ein Sparbuch hat nach einem Jahr einen Stand von 5.300&nbsp;€ (inkl. 3&nbsp;% Zinsen). Wie viel wurde angelegt?",
+ kontext:"Endwert = Kapital × 1,03",
+ formel:"G = 5.300 ÷ 1,03",
+ schritte:["G = 5.300 ÷ 1,03 ≈ 5.145,63 €","Angelegt wurden ca. 5.145,63 €."],
+ antwort:5145.63, einheit:"€", toleranz:0.5},
+
+{stufe:3,fach:"Einzelhandel",
+ text:"Brutto-Tagesumsatz 7.140&nbsp;€ (19&nbsp;% MwSt.). Wie hoch ist der Netto-Umsatz?",
+ kontext:"Netto = Brutto ÷ 1,19",
+ formel:"Netto = 7.140 ÷ 1,19",
+ schritte:["Netto = 7.140 ÷ 1,19 = 6.000 €","Netto-Umsatz: 6.000 €"],
+ antwort:6000, einheit:"€", toleranz:0.5},
+
+{stufe:3,fach:"beide",
+ text:"Preis A: 340&nbsp;€ nach 15&nbsp;% Rabatt. Preis B: 390&nbsp;€ nach 25&nbsp;% Rabatt. Welcher Originalpreis war höher?",
+ kontext:"Beide Originalpreise berechnen und vergleichen.",
+ formel:"G_A = 340 ÷ 0,85; G_B = 390 ÷ 0,75",
+ schritte:["G_A = 340 ÷ 0,85 ≈ 400 €","G_B = 390 ÷ 0,75 = 520 €","Originalpreis B war höher: 520 € vs. 400 €","Gib den höheren Originalpreis ein."],
+ antwort:520, einheit:"€", toleranz:0.5},
+
+{stufe:3,fach:"BFS 1",
+ text:"Mara spart im 1. Jahr 8&nbsp;% von 2.000&nbsp;€, im 2. Jahr 12&nbsp;% von 2.500&nbsp;€. Wie viel spart sie insgesamt?",
+ kontext:"Sparwerte separat berechnen, dann addieren.",
+ formel:"W1 = 2.000 × 0,08; W2 = 2.500 × 0,12",
+ schritte:["W1 = 2.000 × 0,08 = 160 €","W2 = 2.500 × 0,12 = 300 €","Gesamt: 160 + 300 = 460 €"],
+ antwort:460, einheit:"€", toleranz:0.05},
+
+{stufe:3,fach:"Einzelhandel",
+ text:"Einkaufspreis 560&nbsp;€, Verkaufspreis 728&nbsp;€. Berechne den Rohgewinn und den Aufschlagsatz (%).",
+ kontext:"Aufschlag% = (VKP − EKP) ÷ EKP × 100. Gib den Aufschlagsatz ein.",
+ formel:"p% = (728 − 560) ÷ 560",
+ schritte:["Rohgewinn: 728 − 560 = 168 €","p% = 168 ÷ 560 = 0,30 → 30 %","Aufschlagsatz: 30 %"],
+ antwort:30, einheit:"%", toleranz:0.1},
+
+{stufe:3,fach:"beide",
+ text:"Artikel wird um 20&nbsp;% erhöht (von 100&nbsp;€). Um wie viel Prozent muss man den neuen Preis senken, um wieder auf 100&nbsp;€ zu kommen?",
+ kontext:"Neuer Preis nach Erhöhung: 120 €. Gesucht: Senkung in % von 120.",
+ formel:"p% = 20 ÷ 120",
+ schritte:["Neuer Preis: 100 × 1,20 = 120 €","Senkung nötig: 20 €","p% = 20 ÷ 120 ≈ 0,1667 → ca. 16,7 %"],
+ antwort:16.67, einheit:"%", toleranz:0.2},
+
+{stufe:3,fach:"BFS 1",
+ text:"Gehalt nach 8&nbsp;% Erhöhung: 1.944&nbsp;€. Wie hoch war das Gehalt vorher?",
+ kontext:"1.944 € = 108 % des alten Gehalts.",
+ formel:"G = 1.944 ÷ 1,08",
+ schritte:["G = 1.944 ÷ 1,08 = 1.800 €","Das alte Gehalt betrug 1.800 €."],
+ antwort:1800, einheit:"€", toleranz:0.05},
+
+{stufe:3,fach:"Einzelhandel",
+ text:"Ein Händler hat auf Jahresbasis 15.000&nbsp;€ Einkauf und 19.500&nbsp;€ Umsatz. Berechne die Handelsspanne in&nbsp;%.",
+ kontext:"Handelsspanne% = (Umsatz − Einkauf) ÷ Umsatz × 100",
+ formel:"p% = (19.500 − 15.000) ÷ 19.500",
+ schritte:["Spanne: 19.500 − 15.000 = 4.500 €","p% = 4.500 ÷ 19.500 ≈ 0,2308 → ca. 23,1 %"],
+ antwort:23.08, einheit:"%", toleranz:0.2},
+
+{stufe:3,fach:"beide",
+ text:"Preis fällt um 10&nbsp;% dann nochmal um 10&nbsp;%. Ausgangspreis 500&nbsp;€. Endpreis?",
+ kontext:"Achtung: Zwei aufeinanderfolgende Prozentsätze multiplizieren.",
+ formel:"E = 500 × 0,90 × 0,90",
+ schritte:["Nach 1. Senkung: 500 × 0,90 = 450 €","Nach 2. Senkung: 450 × 0,90 = 405 €","Endpreis: 405 € (nicht 400 €!)"],
+ antwort:405, einheit:"€", toleranz:0.05}
+];
+
+/* ============================================================
+   ZUSTAND
+============================================================ */
+const SK = 'mathe-prozent';
+let state = {
+  punkte:0, stufe:0, idx:0, fehl:0,
+  levelDone:[false,false,false,false],
+  filter:'both',  // 'both'|'bfs1'|'eh'
+  examRunning:false, examIdx:0, examAns:[]
+};
+
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem(SK)||'{}');
+    if(s.punkte!==undefined) state.punkte=s.punkte;
+    if(s.levelDone!==undefined) state.levelDone=s.levelDone;
+  }catch(e){}
+}
+function saveState(){
+  localStorage.setItem(SK,JSON.stringify({punkte:state.punkte,levelDone:state.levelDone}));
+}
+
+/* ============================================================
+   FILTERFUNKTION
+============================================================ */
+function filteredTasks(stufe){
+  return AUFGABEN.filter(a=>{
+    if(a.stufe!==stufe) return false;
+    if(state.filter==='both') return true;
+    if(state.filter==='bfs1') return a.fach==='BFS 1'||a.fach==='beide';
+    if(state.filter==='eh')   return a.fach==='Einzelhandel'||a.fach==='beide';
+    return true;
+  });
+}
+
+function setFilter(f){
+  state.filter=f;
+  state.idx=0; state.fehl=0;
+  ['both','bfs1','eh'].forEach(id=>{
+    const btn=document.getElementById('fb-'+id);
+    btn.className='filter-btn';
+    if(id===f) btn.classList.add(f==='both'?'active-both':f==='bfs1'?'active-bfs1':'active-eh');
+  });
+  renderLearnTask();
+}
+
+/* ============================================================
+   HILFSFUNKTIONEN
+============================================================ */
+function fmtNum(n){return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:2})}
+function parseDE(s){return parseFloat(String(s).replace(',','.').replace(/\s/g,''))}
+function fachLabel(fach){
+  if(fach==='BFS 1') return '<span style="color:var(--bfs1);font-size:.7rem;font-weight:700">BFS 1</span>';
+  if(fach==='Einzelhandel') return '<span style="color:var(--eh);font-size:.7rem;font-weight:700">Einzelhandel</span>';
+  return '<span style="color:var(--primary);font-size:.7rem;font-weight:700">BFS 1 &amp; EH</span>';
+}
+
+/* ============================================================
+   MODUS-WECHSEL
+============================================================ */
+function switchMode(m){
+  const learn=document.getElementById('panel-learn');
+  const exam=document.getElementById('panel-exam');
+  const btnL=document.getElementById('btn-learn');
+  const btnE=document.getElementById('btn-exam');
+  if(m==='learn'){
+    learn.classList.remove('hidden'); exam.classList.add('hidden');
+    btnL.classList.add('active'); btnL.setAttribute('aria-selected','true');
+    btnE.classList.remove('active'); btnE.setAttribute('aria-selected','false');
+  } else {
+    exam.classList.remove('hidden'); learn.classList.add('hidden');
+    btnE.classList.add('active'); btnE.setAttribute('aria-selected','true');
+    btnL.classList.remove('active'); btnL.setAttribute('aria-selected','false');
+    document.getElementById('exam-start').classList.remove('hidden');
+    document.getElementById('exam-task-area').classList.add('hidden');
+    document.getElementById('exam-result').classList.add('hidden');
+  }
+}
+
+/* ============================================================
+   LERNMODUS – Stufe wählen
+============================================================ */
+function selectLevel(s){
+  state.stufe=s; state.idx=0; state.fehl=0;
+  for(let i=0;i<4;i++){
+    const b=document.getElementById('lvl-btn-'+i);
+    b.classList.toggle('active',i===s);
+    b.classList.toggle('done',state.levelDone[i]);
+  }
+  renderLearnTask(); updateProgress();
+}
+
+/* ============================================================
+   LERNMODUS – Aufgabe rendern
+============================================================ */
+function renderLearnTask(){
+  const area=document.getElementById('task-area');
+  const liste=filteredTasks(state.stufe);
+  if(!liste.length){
+    area.innerHTML=`<div class="card"><p style="font-size:.88rem;color:var(--muted)">
+      Keine Aufgaben für diesen Filter und diese Stufe vorhanden.</p></div>`;
+    return;
+  }
+  if(state.idx>=liste.length){
+    state.levelDone[state.stufe]=true; saveState(); awardBadge(state.stufe);
+    const n=state.stufe;
+    area.innerHTML=`<div class="card finish-card">
+      <div class="finish-icon">🎉</div>
+      <h2>Stufe ${n+1} abgeschlossen!</h2>
+      <p>Du hast alle ${liste.length} Aufgaben dieser Stufe beantwortet.</p>
+      ${n<3?`<button class="btn btn-success" onclick="selectLevel(${n+1})">
+        Weiter zu Stufe ${n+2} →</button>`
+       :'<p style="font-weight:700;color:var(--primary)">Alle Stufen gemeistert! 🏆</p>'}
+    </div>`;
+    document.getElementById('lvl-btn-'+n).classList.add('done');
+    return;
+  }
+  const a=liste[state.idx];
+  const nr=state.idx+1; const ges=liste.length;
+  const stNamen=['Einstieg','Training','Prüfungsvorbereitung','Bonus'];
+  area.innerHTML=`
+    <div class="task-card" id="cur-task">
+      <div class="task-head">
+        <span>Stufe ${state.stufe+1}: ${stNamen[state.stufe]} · ${fachLabel(a.fach)}</span>
+        <span class="task-nr">${nr} / ${ges}</span>
+      </div>
+      <div class="task-body">
+        <p class="task-text">${a.text}</p>
+        ${a.kontext?`<div class="task-ctx">📌 ${a.kontext}</div>`:''}
+        <div class="input-row">
+          <input type="number" step="0.01" inputmode="decimal"
+                 class="task-input" id="ans-inp"
+                 aria-label="Deine Antwort"
+                 placeholder="Antwort eingeben"
+                 onkeydown="if(event.key==='Enter')checkLearn()">
+          <span class="unit">${a.einheit}</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="checkLearn()">Prüfen</button>
+          <button class="btn btn-hint btn-sm" onclick="showHint()" id="btn-hint">💡 Tipp</button>
+          <button class="btn btn-calc btn-sm" onclick="toggleCalc()">🧮 Rechner</button>
+        </div>
+        <div class="hint-box" id="hint-box">
+          <strong>Tipp</strong>
+          Formel: <strong>${a.formel}</strong>
+        </div>
+        <div class="calc-wrapper" id="calc-wrap">${buildCalc()}</div>
+        <div class="fb-box" id="fb-box"></div>
+        <div class="sol-box" id="sol-box">
+          <strong>Rechenweg</strong>
+          ${a.schritte.map((s,i)=>`<div class="step">
+            <span class="step-nr">${i+1}.</span><span>${s}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="task-nav">
+        <span class="task-counter">⭐ ${state.punkte} Punkte</span>
+        <button class="btn btn-hint btn-sm" id="btn-next"
+                onclick="nextLearn()" style="display:none">Weiter →</button>
+      </div>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('ans-inp');if(i)i.focus();},80);
+}
+
+/* ── Antwort prüfen ──────────────────────────────────── */
+function checkLearn(){
+  const liste=filteredTasks(state.stufe);
+  const a=liste[state.idx];
+  const inp=document.getElementById('ans-inp');
+  const fb=document.getElementById('fb-box');
+  const sol=document.getElementById('sol-box');
+  const nxt=document.getElementById('btn-next');
+  if(!inp||inp.value.trim()===''){
+    fb.className='fb-box wrong';
+    fb.innerHTML='<strong>⚠️ Bitte eine Zahl eingeben.</strong>';
+    return;
+  }
+  const val=parseDE(inp.value);
+  const tol=a.toleranz||0.05;
+  const ok=Math.abs(val-a.antwort)<=tol;
+  inp.classList.remove('correct','wrong');
+  if(ok){
+    inp.classList.add('correct');
+    fb.className='fb-box correct';
+    fb.innerHTML=`<strong>✅ Richtig!</strong> ${fmtNum(a.antwort)} ${a.einheit} – gut gemacht!`;
+    sol.classList.add('visible');
+    nxt.style.display='inline-flex';
+    inp.disabled=true;
+    document.getElementById('btn-hint').disabled=true;
+    const p=state.fehl===0?10:state.fehl===1?5:2;
+    state.punkte+=p; saveState(); updatePts();
+  } else {
+    state.fehl++;
+    inp.classList.add('wrong');
+    fb.className='fb-box wrong';
+    if(state.fehl===1){
+      fb.innerHTML='<strong>❌ Noch nicht ganz.</strong> Schau dir den Tipp an (💡) und versuche es nochmal.';
+      showHint();
+    } else {
+      fb.innerHTML=`<strong>❌ Falsch.</strong> Die Lösung ist ${fmtNum(a.antwort)} ${a.einheit}. Sieh dir den Rechenweg an.`;
+      sol.classList.add('visible');
+      nxt.style.display='inline-flex';
+      inp.disabled=true;
+    }
+  }
+}
+
+function showHint(){const h=document.getElementById('hint-box');if(h)h.classList.add('visible');}
+function nextLearn(){state.idx++;state.fehl=0;renderLearnTask();updateProgress();}
+
+/* ============================================================
+   TASCHENRECHNER
+   Unterstützt: +, -, ×/*, ÷//, Klammern, Brüche (a/b)
+   Kein externes Framework, reines Vanilla-JS + eval-Ersatz
+============================================================ */
+function buildCalc(){
+  return `
+  <div class="calc" id="calc-widget" role="region" aria-label="Taschenrechner">
+    <div class="calc-display">
+      <div class="calc-expr" id="c-expr"></div>
+      <div class="calc-val" id="c-val">0</div>
+    </div>
+    <div class="calc-grid">
+      <!-- Zeile 1 -->
+      <button class="cb cb-fn" onclick="cInput('(')">(</button>
+      <button class="cb cb-fn" onclick="cInput(')')">)</button>
+      <button class="cb cb-fn" onclick="cFrac()">a/b</button>
+      <button class="cb cb-fn" onclick="cPercent()">%</button>
+      <button class="cb cb-clr" onclick="cClear()">C</button>
+      <!-- Zeile 2 -->
+      <button class="cb cb-num" onclick="cInput('7')">7</button>
+      <button class="cb cb-num" onclick="cInput('8')">8</button>
+      <button class="cb cb-num" onclick="cInput('9')">9</button>
+      <button class="cb cb-op"  onclick="cInput('÷')">÷</button>
+      <button class="cb cb-fn"  onclick="cDel()">⌫</button>
+      <!-- Zeile 3 -->
+      <button class="cb cb-num" onclick="cInput('4')">4</button>
+      <button class="cb cb-num" onclick="cInput('5')">5</button>
+      <button class="cb cb-num" onclick="cInput('6')">6</button>
+      <button class="cb cb-op"  onclick="cInput('×')">×</button>
+      <button class="cb cb-fn"  onclick="cInput('00')">00</button>
+      <!-- Zeile 4 -->
+      <button class="cb cb-num" onclick="cInput('1')">1</button>
+      <button class="cb cb-num" onclick="cInput('2')">2</button>
+      <button class="cb cb-num" onclick="cInput('3')">3</button>
+      <button class="cb cb-op"  onclick="cInput('−')">−</button>
+      <button class="cb cb-eq cb-span1" onclick="cEquals()" style="grid-row:span 2">=</button>
+      <!-- Zeile 5 -->
+      <button class="cb cb-num cb-span2" onclick="cInput('0')">0</button>
+      <button class="cb cb-num" onclick="cInput(',')">&#44;</button>
+      <button class="cb cb-op"  onclick="cInput('+')">+</button>
+    </div>
+    <div class="calc-copy-hint">Ergebnis antippen zum Übernehmen</div>
+  </div>`;
+}
+
+// Rechner-Zustand
+let cExpr='', cFracMode=false;
+
+function toggleCalc(){
+  const w=document.getElementById('calc-wrap');
+  if(w) w.classList.toggle('visible');
+}
+
+function cInput(ch){
+  if(cFracMode){
+    // Im Bruch-Modus: "a/b" direkt in Ausdruck schreiben
+    cExpr+=ch; cFracMode=false;
+  } else {
+    // Komma → Punkt für interne Auswertung, aber Display zeigt Komma
+    cExpr+=ch;
+  }
+  cUpdateDisplay();
+}
+
+function cFrac(){
+  // Fügt Bruchstrich ein: letzten Eintrag ÷ nächste Zahl
+  cExpr+='÷'; cFracMode=false; cUpdateDisplay();
+}
+
+function cPercent(){
+  // Wandelt die letzte Zahl in /100 um
+  cExpr+='÷100'; cUpdateDisplay();
+}
+
+function cDel(){
+  cExpr=cExpr.slice(0,-1); cUpdateDisplay();
+}
+
+function cClear(){
+  cExpr=''; cUpdateDisplay(true);
+}
+
+function cEquals(){
+  try{
+    const result=calcEval(cExpr);
+    const disp=document.getElementById('c-val');
+    const expr=document.getElementById('c-expr');
+    if(disp) disp.textContent=fmtNum(result);
+    if(expr) expr.textContent=cExpr+' =';
+    // Ergebnis ins Eingabefeld übernehmen beim Antippen
+    if(disp){
+      disp.style.cursor='pointer';
+      disp.title='Antippen zum Übernehmen';
+      disp.onclick=()=>{
+        const inp=document.getElementById('ans-inp')||document.getElementById('exam-inp');
+        if(inp){
+          inp.value=String(result).replace('.',',');
+          inp.focus();
+        }
+      };
+    }
+    cExpr='';
+  } catch(e){
+    const disp=document.getElementById('c-val');
+    if(disp) disp.textContent='Fehler';
+    cExpr='';
+  }
+}
+
+function cUpdateDisplay(clear){
+  const expr=document.getElementById('c-expr');
+  const val=document.getElementById('c-val');
+  if(expr) expr.textContent=cExpr;
+  if(clear&&val) val.textContent='0';
+  if(!clear&&cExpr&&val){
+    try{val.textContent=fmtNum(calcEval(cExpr));}catch(e){val.textContent='';}
+  }
+}
+
+/* Eigener sicherer Parser (keine eval-Nutzung mit eval())
+   Unterstützt: +, −, ×, ÷, Klammern, Dezimalkomma/-punkt */
+function calcEval(expr){
+  // Normalisieren: Komma→Punkt, ×→*, ÷→/, −→-
+  let e=expr.replace(/,/g,'.').replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-');
+  // Sicherheitscheck: nur erlaubte Zeichen
+  if(!/^[0-9+\-*/().% ]+$/.test(e)) throw new Error('Ungültig');
+  // Auswertung über Function-Konstruktor (sicherer als direktes eval mit Nutzereingaben aus Aufgaben)
+  // eslint-disable-next-line no-new-func
+  const result=Function('"use strict";return ('+e+')')();
+  if(!isFinite(result)) throw new Error('Division durch 0');
+  return Math.round(result*10000)/10000;
+}
+
+/* ============================================================
+   PRÜFUNGSMODUS
+============================================================ */
+function examPool(){
+  // 10 Aufgaben: je 2–3 aus jeder Stufe, gefiltert nach aktuellem Filter
+  const pool=[];
+  [0,1,2,3].forEach(s=>{
+    const f=filteredTasks(s);
+    // Bis zu 3 aus jeder Stufe, gemischt
+    const shuffled=[...f].sort(()=>Math.random()-.5);
+    pool.push(...shuffled.slice(0,3));
+  });
+  // Genau 10 nehmen
+  return pool.sort(()=>Math.random()-.5).slice(0,10);
+}
+
+let examList=[];
+
+function startExam(){
+  examList=examPool();
+  state.examIdx=0; state.examAns=[];
+  document.getElementById('exam-start').classList.add('hidden');
+  document.getElementById('exam-task-area').classList.remove('hidden');
+  renderExamTask();
+}
+
+function renderExamTask(){
+  const area=document.getElementById('exam-task-area');
+  const a=examList[state.examIdx];
+  const nr=state.examIdx+1; const ges=examList.length;
+  area.innerHTML=`
+    <div class="task-card">
+      <div class="task-head">
+        <span>Prüfungsmodus · ${fachLabel(a.fach)}</span>
+        <span class="task-nr">${nr} / ${ges}</span>
+      </div>
+      <div class="task-body">
+        <p class="task-text">${a.text}</p>
+        <div class="input-row">
+          <input type="number" step="0.01" inputmode="decimal"
+                 class="task-input" id="exam-inp"
+                 aria-label="Deine Antwort" placeholder="Antwort eingeben"
+                 onkeydown="if(event.key==='Enter')submitExam()">
+          <span class="unit">${a.einheit}</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="submitExam()">
+            ${nr<ges?'Nächste →':'Auswertung →'}</button>
+          <button class="btn btn-calc btn-sm" onclick="toggleExamCalc()">🧮 Rechner</button>
+        </div>
+        <div class="calc-wrapper" id="exam-calc-wrap">${buildCalc()}</div>
+      </div>
+      <div class="task-nav">
+        <div class="prog-wrap" style="flex:1;margin:0">
+          <div class="prog-fill" style="width:${(nr-1)/ges*100}%;background:var(--accent)"></div>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(()=>{const i=document.getElementById('exam-inp');if(i)i.focus();},80);
+}
+
+function toggleExamCalc(){
+  const w=document.getElementById('exam-calc-wrap');
+  if(w) w.classList.toggle('visible');
+}
+
+function submitExam(){
+  const a=examList[state.examIdx];
+  const inp=document.getElementById('exam-inp');
+  const val=inp&&inp.value.trim()!==''?parseDE(inp.value):null;
+  const tol=a.toleranz||0.05;
+  const ok=val!==null&&Math.abs(val-a.antwort)<=tol;
+  state.examAns.push({a,eingabe:val,ok});
+  state.examIdx++;
+  if(state.examIdx<examList.length) renderExamTask();
+  else showExamResult();
+}
+
+function showExamResult(){
+  document.getElementById('exam-task-area').classList.add('hidden');
+  const res=document.getElementById('exam-result');
+  res.classList.remove('hidden');
+  const richtig=state.examAns.filter(x=>x.ok).length;
+  const ges=state.examAns.length;
+  const proz=Math.round(richtig/ges*100);
+  document.getElementById('res-score').textContent=`${richtig} / ${ges}`;
+  document.getElementById('res-label').textContent='Aufgaben richtig';
+  document.getElementById('res-bar').style.width=proz+'%';
+  const msgs=[
+    {min:0,  t:'💪 Noch etwas Übung nötig – probiere zuerst den Lernmodus!'},
+    {min:50, t:'👍 Gut gemacht! Du bist auf dem richtigen Weg.'},
+    {min:70, t:'🌟 Sehr gut! Noch ein bisschen, dann sitzt es perfekt.'},
+    {min:90, t:'🏆 Ausgezeichnet! Fast alles richtig!'},
+    {min:100,t:'🎯 Perfekt! Alle Aufgaben richtig!'}
+  ];
+  document.getElementById('res-msg').textContent=msgs.filter(m=>m.min<=proz).pop().t;
+  const solDiv=document.getElementById('res-solutions');
+  solDiv.innerHTML='<h3>Musterlösungen</h3>'+state.examAns.map((item,i)=>`
+    <div class="sol-item">
+      <span class="sol-icon">${item.ok?'✅':'❌'}</span>
+      <div class="sol-text">
+        <strong>Aufgabe ${i+1}: ${item.ok?'Richtig':'Falsch'}</strong>
+        <span>${item.a.text.replace(/<[^>]+>/g,'')}</span>
+        ${!item.ok?`<br><span>Deine Antwort: ${item.eingabe!==null?item.eingabe:'–'} ${item.a.einheit}</span>`:''}
+        <br><span>Lösung: ${fmtNum(item.a.antwort)} ${item.a.einheit}</span>
+        <br><small style="color:var(--muted)">${item.a.schritte[item.a.schritte.length-1]}</small>
+      </div>
+    </div>`).join('');
+}
+
+function restartExam(){
+  document.getElementById('exam-result').classList.add('hidden');
+  document.getElementById('exam-start').classList.remove('hidden');
+}
+
+/* ============================================================
+   BADGES & PUNKTE
+============================================================ */
+function awardBadge(s){
+  const el=document.getElementById('b'+(s+1));
+  if(el){el.className='bdg-e';el.style.transform='scale(1.4)';
+    setTimeout(()=>el.style.transform='scale(1)',400);}
+}
+function updatePts(){
+  const el=document.getElementById('pts-disp');
+  if(el) el.textContent=state.punkte+' Punkte';
+}
+function updateProgress(){
+  const done=state.levelDone.filter(Boolean).length;
+  const p=Math.round(done/4*100);
+  const f=document.getElementById('prog-fill');
+  const b=document.querySelector('[role="progressbar"]');
+  if(f) f.style.width=p+'%';
+  if(b) b.setAttribute('aria-valuenow',p);
+}
+
+/* ============================================================
+   ACCORDION
+============================================================ */
+function toggleAcc(btn){
+  const body=document.getElementById(btn.getAttribute('aria-controls'));
+  const open=btn.getAttribute('aria-expanded')==='true';
+  btn.setAttribute('aria-expanded',String(!open));
+  body.classList.toggle('open',!open);
+}
+
+/* ============================================================
+   LEHRKRAFT-MODUS
+============================================================ */
+function toggleTeacher(){
+  const p=document.getElementById('teacher-panel');
+  const b=document.querySelector('.teacher-toggle');
+  const open=p.style.display==='block';
+  p.style.display=open?'none':'block';
+  b.setAttribute('aria-expanded',String(!open));
+  b.textContent=open?'Für Lehrkräfte ▾':'Für Lehrkräfte ▴';
+  if(!open) buildTeacherTable();
+}
+function buildTeacherTable(){
+  const tb=document.getElementById('teacher-table');
+  if(!tb||tb.children.length>0) return;
+  const sN=['Einstieg','Training','Prüfung','Bonus'];
+  AUFGABEN.forEach(a=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${sN[a.stufe]}</td><td>${a.fach}</td>
+      <td>${a.text.replace(/<[^>]+>/g,'').slice(0,60)}…</td>
+      <td><strong>${fmtNum(a.antwort)} ${a.einheit}</strong></td>`;
+    tb.appendChild(tr);
+  });
+}
+function resetApp(){
+  if(confirm('Lernstand für Prozentrechnung zurücksetzen?')){
+    localStorage.removeItem(SK); location.reload();
+  }
+}
+
+/* ============================================================
+   BADGES WIEDERHERSTELLEN & INIT
+============================================================ */
+function restoreBadges(){
+  state.levelDone.forEach((d,i)=>{
+    if(d){
+      const el=document.getElementById('b'+(i+1));
+      if(el) el.className='bdg-e';
+      const b=document.getElementById('lvl-btn-'+i);
+      if(b) b.classList.add('done');
+    }
+  });
+}
+
+loadState();
+updatePts();
+updateProgress();
+restoreBadges();
+selectLevel(0);
+</script>
+</body>
+</html>

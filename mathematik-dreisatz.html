@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<!--
+  MATHEMATIK - DREISATZ | Berufskolleg NRW
+  Datei: mathematik-dreisatz.html | Version: 1.0.0 | Datum: 2025-05-03
+  Fach: Mathematik | Bildungsgaenge: BFS 1 | Einzelhandel
+  Ausgeschlossen: Wirtschaft, Politik, BFS 2, AVB | Faecheruebergreifend: Nein
+  Lizenz Code: MIT | Lizenz Inhalte: CC BY-SA 4.0
+-->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Dreisatz | Mathematik BFS 1 &amp; Einzelhandel</title>
+<style>
+:root{--bg:#f5f4f0;--surface:#fff;--primary:#1a3a5c;--accent:#e85d26;--bfs1:#1a6e3c;--eh:#7b2d8b;--success-bg:#ecfdf5;--success-cl:#065f46;--error-bg:#fff1f2;--error-cl:#9f1239;--hint-bg:#eff6ff;--hint-cl:#1e40af;--text:#1c1c1e;--muted:#6b7280;--border:#e5e7eb;--radius:14px;--shadow:0 4px 20px rgba(0,0,0,0.08)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+.app-header{background:var(--primary);color:white;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,0.18)}
+.btn-back{background:rgba(255,255,255,0.15);border:none;color:white;font-size:.82rem;font-weight:700;padding:8px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-family:inherit;flex-shrink:0}
+.btn-back:hover{background:rgba(255,255,255,0.25)}
+.header-center{flex:1;min-width:0}
+.header-title{font-size:clamp(.88rem,2.5vw,1rem);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-badges{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.hbadge{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+.hbadge-bfs1{background:rgba(26,110,60,0.45);color:#a7f3d0}
+.hbadge-eh{background:rgba(123,45,139,0.45);color:#e9d5ff}
+.header-points{font-size:.8rem;font-weight:700;background:rgba(255,255,255,0.12);padding:6px 10px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+.mode-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
+.mode-btn{flex:1;padding:13px 8px;border:none;background:none;font-size:.85rem;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;font-family:inherit}
+.mode-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.progress-wrap{background:var(--border);height:5px}
+.progress-fill{height:5px;background:var(--primary);width:0%;transition:width .4s ease}
+.stats-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-bottom:1px solid var(--border);padding:8px 16px;gap:10px}
+.badge-row{display:flex;gap:5px}
+.badge-icon{font-size:1.1rem;transition:transform .3s}
+.badge-icon.locked{filter:grayscale(1);opacity:.3}
+.badge-icon.earned{filter:none}
+.filter-bar{display:flex;gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.filter-label{font-size:.75rem;font-weight:700;color:var(--muted);align-self:center;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.filter-btn{padding:7px 14px;border-radius:20px;border:2px solid var(--border);background:var(--surface);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;color:var(--muted)}
+.filter-btn:hover{border-color:var(--primary);color:var(--primary)}
+.filter-btn.active-all{border-color:var(--primary);background:var(--primary);color:white}
+.filter-btn.active-bfs1{border-color:var(--bfs1);background:var(--bfs1);color:white}
+.filter-btn.active-eh{border-color:var(--eh);background:var(--eh);color:white}
+.container{max-width:700px;margin:0 auto;padding:20px 16px}
+.card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 20px;margin-bottom:18px;border:1px solid var(--border)}
+.theory-section h2{font-size:1.05rem;color:var(--primary);margin-bottom:12px;font-weight:800}
+.theory-section h3{font-size:.88rem;color:var(--primary);margin:16px 0 8px;font-weight:700}
+.theory-section p{font-size:.88rem;line-height:1.65;color:var(--text);margin-bottom:10px}
+.merksatz{background:var(--hint-bg);border-left:4px solid var(--primary);border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0}
+.merksatz-label{font-size:.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:5px}
+.merksatz p{font-size:.86rem;color:var(--hint-cl);margin:0;font-weight:600}
+.schema-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+.schema-table th{background:var(--primary);color:white;padding:9px 12px;text-align:left;font-weight:700}
+.schema-table td{padding:9px 12px;border:1px solid var(--border)}
+.schema-table tr:nth-child(even) td{background:#f8f9fa}
+.schema-table .hl{font-weight:800;color:var(--primary)}
+.step-schema{background:#f8f9ff;border:1px solid #dde3ff;border-radius:10px;padding:14px;margin:12px 0}
+.step-schema .ss-title{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--primary);margin-bottom:10px}
+.step-schema .ss-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:.85rem}
+.step-schema .ss-nr{min-width:22px;height:22px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;margin-top:1px}
+.glossar-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.84rem}
+.glossar-item:last-child{border-bottom:none}
+.glossar-term{font-weight:700;color:var(--primary);min-width:130px}
+.glossar-def{color:var(--text);line-height:1.5}
+.accordion-btn{width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:none;font-family:inherit;font-size:.88rem;font-weight:700;color:var(--primary);cursor:pointer;padding:0;text-align:left}
+.accordion-btn .arrow{transition:transform .2s}
+.accordion-btn[aria-expanded="true"] .arrow{transform:rotate(180deg)}
+.accordion-body{overflow:hidden;max-height:0;transition:max-height .35s ease}
+.accordion-body.open{max-height:2000px}
+.level-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.level-btn{padding:7px 13px;border-radius:8px;border:2px solid var(--border);background:var(--surface);font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;color:var(--muted);display:flex;align-items:center;gap:5px}
+.level-btn.active{border-color:var(--primary);color:var(--primary);background:#eff6ff}
+.level-btn .lv-check{display:none;color:var(--bfs1)}
+.level-btn.done .lv-check{display:inline}
+.task-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
+.task-header{background:var(--primary);color:white;padding:12px 16px;font-size:.78rem;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.task-fach-badge{font-size:.65rem;padding:2px 7px;border-radius:4px;font-weight:700;text-transform:uppercase}
+.tfb-bfs1{background:rgba(26,110,60,0.4);color:#a7f3d0}
+.tfb-eh{background:rgba(123,45,139,0.4);color:#e9d5ff}
+.tfb-beide{background:rgba(255,255,255,0.2);color:white}
+.task-body{padding:18px 16px}
+.task-text{font-size:.93rem;line-height:1.65;margin-bottom:14px;font-weight:600}
+.task-context{font-size:.81rem;color:var(--muted);background:#fafafa;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:14px;line-height:1.5}
+.input-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.task-input{flex:1;min-width:110px;padding:11px 13px;border:2px solid var(--border);border-radius:8px;font-size:1rem;font-family:inherit;color:var(--text);transition:border-color .15s}
+.task-input:focus{outline:none;border-color:var(--primary)}
+.task-input.correct{border-color:var(--success-cl);background:var(--success-bg)}
+.task-input.wrong{border-color:#e11d48;background:var(--error-bg)}
+.unit{font-size:.88rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.btn{padding:11px 18px;border:none;border-radius:9px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s,transform .1s;display:inline-flex;align-items:center;gap:5px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:white}
+.btn-success{background:var(--bfs1);color:white}
+.btn-hint{background:var(--hint-bg);color:var(--hint-cl);border:1px solid #bfdbfe}
+.btn-sm{padding:8px 13px;font-size:.8rem}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.feedback-box{border-radius:9px;padding:12px 14px;font-size:.86rem;line-height:1.55;margin-top:12px;display:none}
+.feedback-box.correct{display:block;background:var(--success-bg);color:var(--success-cl);border:1px solid #a7f3d0}
+.feedback-box.wrong{display:block;background:var(--error-bg);color:var(--error-cl);border:1px solid #fecdd3}
+.feedback-box strong{display:block;font-size:.92rem;margin-bottom:3px}
+.hint-box{background:var(--hint-bg);border:1px solid #bfdbfe;border-radius:9px;padding:11px 13px;font-size:.83rem;color:var(--hint-cl);margin-top:10px;display:none;line-height:1.55}
+.hint-box.visible{display:block}
+.hint-box strong{display:block;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.solution-box{background:#f8f9fa;border:1px solid var(--border);border-radius:9px;padding:12px 14px;font-size:.83rem;margin-top:10px;display:none;line-height:1.7}
+.solution-box.visible{display:block}
+.solution-box strong{color:var(--primary);display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.step{display:flex;gap:7px;margin-bottom:4px}
+.step-nr{font-weight:700;color:var(--primary);min-width:18px}
+.task-nav{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#fafafa;border-top:1px solid var(--border)}
+.task-counter{font-size:.78rem;color:var(--muted);font-weight:600}
+.empty-msg{text-align:center;padding:30px 20px;font-size:.88rem;color:var(--muted)}
+.calc-toggle-btn{width:100%;text-align:left;margin-bottom:10px;background:#1c1c2e;color:#e2e8f0;border:none;border-radius:10px;padding:11px 16px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+.calc-toggle-btn:hover{background:#2d2d44}
+.calc-toggle-btn .calc-arrow{transition:transform .2s}
+.calc-panel{display:none;background:#1c1c2e;border-radius:10px;padding:14px;margin-bottom:12px}
+.calc-panel.open{display:block}
+.calc-display{background:#0f0f1a;border-radius:8px;padding:10px 14px;margin-bottom:10px;min-height:60px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;gap:2px}
+.calc-expr{font-size:.75rem;color:#64748b;font-family:'Courier New',monospace;min-height:16px;word-break:break-all;text-align:right}
+.calc-result{font-size:1.5rem;font-weight:700;color:#e2e8f0;font-family:'Courier New',monospace;word-break:break-all;text-align:right}
+.calc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.calc-btn{padding:12px 4px;border:none;border-radius:7px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Courier New',monospace;transition:transform .08s,opacity .1s;touch-action:manipulation}
+.calc-btn:active{transform:scale(.93)}
+.cb-num{background:#2d3748;color:#e2e8f0}
+.cb-op{background:#3b4a6b;color:#90cdf4}
+.cb-eq{background:var(--accent);color:white;grid-column:span 2}
+.cb-ac{background:#7f1d1d;color:#fecaca}
+.cb-ce{background:#4a1d4a;color:#f3e8ff}
+.cb-spec{background:#1e3a5f;color:#93c5fd}
+.cb-frac{background:#134e2a;color:#86efac}
+.frac-area{display:none;margin-top:10px;background:#0f0f1a;border-radius:8px;padding:12px}
+.frac-area.open{display:block}
+.frac-area label{font-size:.72rem;color:#64748b;display:block;margin-bottom:4px}
+.frac-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.frac-input{width:60px;padding:8px;background:#1c1c2e;border:1px solid #3b4a6b;border-radius:6px;color:#e2e8f0;font-size:.9rem;font-family:inherit;text-align:center}
+.frac-divider{color:#64748b;font-size:1.2rem;font-weight:700}
+.frac-op-select{padding:7px;background:#1c1c2e;border:1px solid #3b4a6b;border-radius:6px;color:#e2e8f0;font-size:.85rem;font-family:inherit}
+.calc-btn.cb-fracgo{background:var(--bfs1);color:white;width:100%;margin-top:4px;font-family:inherit;font-size:.82rem}
+.calc-use-btn{width:100%;margin-top:8px;background:#134e2a;color:#86efac;border:none;border-radius:7px;padding:9px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+.calc-use-btn:hover{background:#166534}
+.calc-use-btn:disabled{opacity:.4;cursor:not-allowed}
+.result-card{text-align:center;padding:28px 20px}
+.result-score{font-size:3rem;font-weight:900;color:var(--primary);line-height:1;margin-bottom:6px}
+.result-label{font-size:.9rem;color:var(--muted);margin-bottom:16px}
+.result-bar-wrap{background:var(--border);border-radius:99px;height:12px;overflow:hidden;margin-bottom:16px}
+.result-bar-fill{height:12px;border-radius:99px;background:var(--primary);transition:width .6s ease}
+.result-message{font-size:1rem;font-weight:700;margin-bottom:20px}
+.sol-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:.83rem;line-height:1.5}
+.sol-item:last-child{border-bottom:none}
+.sol-icon{font-size:.95rem;flex-shrink:0;margin-top:2px}
+.sol-text strong{display:block;font-weight:700;color:var(--text)}
+.sol-text span{color:var(--muted)}
+.teacher-toggle{display:block;margin:28px auto 0;background:none;border:1px solid var(--border);color:var(--muted);font-size:.76rem;padding:7px 15px;border-radius:8px;cursor:pointer;font-family:inherit;transition:background .15s}
+.teacher-toggle:hover{background:var(--border)}
+.teacher-panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:10px 16px 0;font-size:.81rem;line-height:1.7}
+.teacher-panel h2{font-size:.88rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--primary);margin-bottom:12px}
+.teacher-panel table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:.8rem}
+.teacher-panel th{text-align:left;padding:7px 9px;background:#f5f4f0;font-weight:700;color:var(--muted);border:1px solid var(--border)}
+.teacher-panel td{padding:7px 9px;border:1px solid var(--border);vertical-align:top}
+.reset-btn{margin-top:10px;background:#fee2e2;color:#b91c1c;border:none;padding:9px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.81rem;font-family:inherit}
+.reset-btn:hover{background:#fca5a5}
+@media(max-width:480px){.calc-grid{grid-template-columns:repeat(4,1fr)}.cb-eq{grid-column:span 1}}
+.hidden{display:none!important}
+.tc{text-align:center}
+.mt16{margin-top:16px}
+</style>
+</head>
+<body>
+<header class="app-header" role="banner">
+  <a href="index-mathematik.html" class="btn-back">&#8592; Portal</a>
+  <div class="header-center">
+    <div class="header-title">Dreisatz</div>
+    <div class="header-badges">
+      <span class="hbadge hbadge-bfs1">BFS 1</span>
+      <span class="hbadge hbadge-eh">Einzelhandel</span>
+    </div>
+  </div>
+  <div class="header-points" id="hdr-points">&#11088; 0</div>
+</header>
+<div class="mode-bar" role="tablist">
+  <button class="mode-btn active" id="btn-learn" role="tab" aria-selected="true" onclick="switchMode('learn')">&#128214; Lernmodus</button>
+  <button class="mode-btn" id="btn-exam" role="tab" aria-selected="false" onclick="switchMode('exam')">&#9999;&#65039; Pr&#252;fungsmodus</button>
+</div>
+<div class="progress-wrap" role="progressbar" aria-label="Gesamtfortschritt" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  <div class="progress-fill" id="progress-fill"></div>
+</div>
+<div class="stats-bar">
+  <div style="font-size:.8rem;font-weight:700;color:var(--primary)" id="pts-display">0 Punkte</div>
+  <div class="badge-row">
+    <span id="b1" class="badge-icon locked" title="Einstieg gemeistert">&#129353;</span>
+    <span id="b2" class="badge-icon locked" title="Training abgeschlossen">&#129352;</span>
+    <span id="b3" class="badge-icon locked" title="Pr&#252;fungsfit">&#129351;</span>
+    <span id="b4" class="badge-icon locked" title="Bonus-Experte">&#127942;</span>
+  </div>
+</div>
+<div class="filter-bar" role="group" aria-label="Bildungsgang-Filter">
+  <span class="filter-label">Bildungsgang:</span>
+  <button class="filter-btn active-all" id="f-all"  onclick="setFilter('all')">Alle</button>
+  <button class="filter-btn"            id="f-bfs1" onclick="setFilter('bfs1')">BFS 1</button>
+  <button class="filter-btn"            id="f-eh"   onclick="setFilter('eh')">Einzelhandel</button>
+</div>
+<div id="panel-learn" role="tabpanel">
+  <div class="container">
+    <div class="card theory-section">
+      <button class="accordion-btn" onclick="toggleAcc(this)" aria-expanded="true" aria-controls="theory-body">
+        <span>&#128208; Theorie: Dreisatz</span><span class="arrow">&#9650;</span>
+      </button>
+      <div class="accordion-body open" id="theory-body">
+        <div style="padding-top:14px">
+          <div class="merksatz">
+            <div class="merksatz-label">Merksatz</div>
+            <p>Beim Dreisatz rechnet man zuerst auf 1 Einheit (Einheitswert), dann auf die gesuchte Menge. Es gibt den proportionalen (mehr &#8594; mehr) und den antiproportionalen Dreisatz (mehr &#8594; weniger).</p>
+          </div>
+          <h3>Schema: Proportionaler Dreisatz</h3>
+          <div class="step-schema">
+            <div class="ss-title">Lösungsweg</div>
+            <div class="ss-row"><span class="ss-nr">1</span><span>Gegebene Größen aufschreiben: Menge&#8321; &#8594; Wert&#8321;</span></div>
+            <div class="ss-row"><span class="ss-nr">2</span><span>Auf 1 Einheit herunterrechnen: 1 &#8594; Wert&#8321; ÷ Menge&#8321;</span></div>
+            <div class="ss-row"><span class="ss-nr">3</span><span>Auf gesuchte Menge hochrechnen: Menge&#8322; × Einheitswert</span></div>
+          </div>
+          <h3>Beispiel: Proportional</h3>
+          <p>5 Brötchen kosten 2,50 €. Was kosten 8 Brötchen?</p>
+          <table class="schema-table">
+            <tr><th>Menge</th><th>Preis</th></tr>
+            <tr><td>5 Brötchen</td><td>2,50 €</td></tr>
+            <tr><td>1 Brötchen</td><td>2,50 ÷ 5 = <span class="hl">0,50 €</span></td></tr>
+            <tr><td>8 Brötchen</td><td>8 × 0,50 = <span class="hl">4,00 €</span></td></tr>
+          </table>
+          <h3>Antiproportionaler Dreisatz</h3>
+          <div class="merksatz">
+            <div class="merksatz-label">Wichtig</div>
+            <p>Mehr Einheiten &#8594; weniger Zeit/Aufwand. Auf 1 Einheit: <strong>multiplizieren</strong> statt dividieren!</p>
+          </div>
+          <p>Beispiel: 4 Arbeiter brauchen 6 Tage. Wie lange braucht 1 Arbeiter?</p>
+          <table class="schema-table">
+            <tr><th>Arbeiter</th><th>Tage</th></tr>
+            <tr><td>4 Arbeiter</td><td>6 Tage</td></tr>
+            <tr><td>1 Arbeiter</td><td>4 × 6 = <span class="hl">24 Tage</span></td></tr>
+            <tr><td>3 Arbeiter</td><td>24 ÷ 3 = <span class="hl">8 Tage</span></td></tr>
+          </table>
+          <h3>Glossar</h3>
+          <div class="glossar-item"><span class="glossar-term">Dreisatz</span><span class="glossar-def">Rechenweg über den Einheitswert (Schritt 2) zur gesuchten Größe.</span></div>
+          <div class="glossar-item"><span class="glossar-term">Proportional</span><span class="glossar-def">Größen steigen/fallen im gleichen Verhältnis (z.B. Menge und Preis).</span></div>
+          <div class="glossar-item"><span class="glossar-term">Antiproportional</span><span class="glossar-def">Steigt eine Größe, sinkt die andere (z.B. mehr Arbeiter &#8594; weniger Tage).</span></div>
+          <div class="glossar-item"><span class="glossar-term">Einheitswert</span><span class="glossar-def">Der Wert für genau 1 Einheit – immer Schritt 2 im Dreisatz.</span></div>
+          <div class="glossar-item"><span class="glossar-term">Verhältnis</span><span class="glossar-def">Beziehung zwischen zwei Größen, z.B. 3:5.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="level-tabs" role="group" aria-label="Schwierigkeitsstufe">
+      <button class="level-btn active" id="lvl-0" onclick="selectLevel(0)"><span class="lv-check">&#10003;</span>1 Einstieg</button>
+      <button class="level-btn"        id="lvl-1" onclick="selectLevel(1)"><span class="lv-check">&#10003;</span>2 Training</button>
+      <button class="level-btn"        id="lvl-2" onclick="selectLevel(2)"><span class="lv-check">&#10003;</span>3 Pr&#252;fung</button>
+      <button class="level-btn"        id="lvl-3" onclick="selectLevel(3)"><span class="lv-check">&#10003;</span>4 Bonus</button>
+    </div>
+    <button class="calc-toggle-btn" onclick="toggleCalc(this)" aria-expanded="false" aria-controls="calc-panel-learn">
+      <span>&#128393; Taschenrechner</span><span class="calc-arrow">&#9660;</span>
+    </button>
+    <div class="calc-panel" id="calc-panel-learn"></div>
+    <div id="task-area"></div>
+  </div>
+</div>
+<div id="panel-exam" class="hidden" role="tabpanel">
+  <div class="container">
+    <div class="card" id="exam-start">
+      <h2 style="color:var(--primary);margin-bottom:10px;font-size:1.05rem">&#9999;&#65039; Pr&#252;fungsmodus</h2>
+      <p style="font-size:.88rem;line-height:1.6;margin-bottom:14px">Du bearbeitest <strong>10 Aufgaben</strong> ohne Hilfen. Am Ende siehst du Ergebnis und Musterlösungen.</p>
+      <div class="merksatz"><div class="merksatz-label">Hinweis</div><p>Kein Tipp. Taschenrechner ist verfügbar. Musterlösungen erscheinen nach Abschluss.</p></div>
+      <div class="btn-row mt16"><button class="btn btn-primary" onclick="startExam()">Pr&#252;fung starten &#8594;</button></div>
+    </div>
+    <div id="exam-area" class="hidden">
+      <button class="calc-toggle-btn" onclick="toggleCalc(this)" aria-expanded="false" aria-controls="calc-panel-exam">
+        <span>&#128393; Taschenrechner</span><span class="calc-arrow">&#9660;</span>
+      </button>
+      <div class="calc-panel" id="calc-panel-exam"></div>
+      <div id="exam-task-slot"></div>
+    </div>
+    <div class="card result-card hidden" id="exam-result">
+      <div class="result-score" id="r-score">&#8211;</div>
+      <div class="result-label" id="r-label">von 10 Aufgaben richtig</div>
+      <div class="result-bar-wrap"><div class="result-bar-fill" id="r-bar"></div></div>
+      <div class="result-message" id="r-msg"></div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn btn-primary" onclick="restartExam()">Erneut versuchen</button>
+        <button class="btn btn-hint" onclick="switchMode('learn')">Zum Lernmodus</button>
+      </div>
+      <div id="r-sols" style="margin-top:20px;text-align:left"></div>
+    </div>
+  </div>
+</div>
+<button class="teacher-toggle" onclick="toggleTeacher()" aria-expanded="false" aria-controls="teacher-panel">F&#252;r Lehrkr&#228;fte &#9660;</button>
+<div class="teacher-panel" id="teacher-panel" role="region" aria-label="Lehrkraft-Modus">
+  <h2>&#128273; Lehrkraft-Modus</h2>
+  <p><strong>App:</strong> Mathematik &#8211; Dreisatz &nbsp;|&nbsp; <strong>Version:</strong> 1.0.0 &nbsp;|&nbsp; <strong>Stand:</strong> 2025-05-03</p>
+  <p><strong>Bildungsg&#228;nge:</strong> BFS 1, Einzelhandel &nbsp;|&nbsp; <strong>Ausgeschlossen:</strong> Wirtschaft, Politik, BFS 2, AVB</p>
+  <p><strong>Lernziele:</strong> Einfachen und antiproportionalen Dreisatz erkl&#228;ren und anwenden; Alltagsaufgaben aus Haushalt, Handel und Beruf l&#246;sen.</p>
+  <p><strong>Operatoren:</strong> nennen, erkl&#228;ren, berechnen, anwenden, vergleichen</p>
+  <p><strong>Differenzierung:</strong> Einstieg (ganzzahlig, direkt) &#8594; Training (Dezimal, Alltagsbezug) &#8594; Pr&#252;fung (antiproportional, mehrstufig) &#8594; Bonus (zusammengesetzt, Transfer)</p>
+  <p><strong>Datenschutz:</strong> Nur Lernstand in localStorage (<code>mathe-dreisatz-v1</code>). Keine personenbezogenen Daten.</p>
+  <p><strong>Hinweis:</strong> Bildungsgang-Zuordnung fachlich begr&#252;ndet, nicht lehrplanverbindlich. Mit Lehrplan NRW abgleichen.</p>
+  <p><strong>Lizenz:</strong> Code MIT &#183; Inhalte CC BY-SA 4.0</p>
+  <p><strong>Aufgaben&#252;bersicht:</strong></p>
+  <table><thead><tr><th>Nr.</th><th>Stufe</th><th>Bildungsgang</th><th>Aufgabe (gek&#252;rzt)</th><th>L&#246;sung</th></tr></thead><tbody id="teacher-tbody"></tbody></table>
+  <button class="reset-btn" onclick="resetApp()">&#9888;&#65039; Lernstand zur&#252;cksetzen</button>
+</div>
+<script>
+const AUFGABEN=[
+// STUFE 0 BFS1
+{stufe:0,fach:"bfs1",text:"5 Hefte kosten 3,00\u00a0\u20ac. Was kosten 8 Hefte?",kontext:"1 Heft berechnen, dann \u00d7 8.",formel:"1 Heft: 3,00 \u00f7 5 | 8 Hefte: 8 \u00d7 0,60",schritte:["1 Heft: 3,00 \u00f7 5 = 0,60 \u20ac","8 Hefte: 8 \u00d7 0,60 = 4,80 \u20ac","8 Hefte kosten 4,80 \u20ac."],antwort:4.80,einheit:"\u20ac",toleranz:0.01},
+{stufe:0,fach:"bfs1",text:"3 Liter Milch kosten 2,10\u00a0\u20ac. Was kosten 5 Liter?",kontext:"Dreisatz: 3 L \u2192 2,10 \u20ac | 1 L \u2192 ? | 5 L \u2192 ?",formel:"1 L: 2,10 \u00f7 3 | 5 L: 5 \u00d7 0,70",schritte:["1 L: 2,10 \u00f7 3 = 0,70 \u20ac","5 L: 5 \u00d7 0,70 = 3,50 \u20ac","5 Liter kosten 3,50 \u20ac."],antwort:3.50,einheit:"\u20ac",toleranz:0.01},
+{stufe:0,fach:"bfs1",text:"Ein Auto f\u00e4hrt in 3 Stunden 180\u00a0km. Wie weit f\u00e4hrt es in 5 Stunden?",kontext:"Tempo ist konstant (proportional).",formel:"1 h: 180 \u00f7 3 = 60 km | 5 h: 5 \u00d7 60",schritte:["Tempo: 180 \u00f7 3 = 60 km/h","5 h: 5 \u00d7 60 = 300 km","Das Auto f\u00e4hrt 300 km."],antwort:300,einheit:"km",toleranz:0.5},
+{stufe:0,fach:"bfs1",text:"F\u00fcr 4 Personen braucht man 200\u00a0g Nudeln. Wie viel f\u00fcr 7 Personen?",kontext:"Menge und Personen sind proportional.",formel:"1 Person: 200 \u00f7 4 | 7 Personen: 7 \u00d7 50",schritte:["1 Person: 200 \u00f7 4 = 50 g","7 Personen: 7 \u00d7 50 = 350 g","F\u00fcr 7 Personen: 350 g."],antwort:350,einheit:"g",toleranz:0.5},
+{stufe:0,fach:"bfs1",text:"2 Flaschen Wasser kosten 1,20\u00a0\u20ac. Was kosten 9 Flaschen?",kontext:"Dreisatz: 2 \u2192 1,20 \u20ac | 1 \u2192 ? | 9 \u2192 ?",formel:"1 Flasche: 1,20 \u00f7 2 | 9: 9 \u00d7 0,60",schritte:["1 Flasche: 1,20 \u00f7 2 = 0,60 \u20ac","9 Flaschen: 9 \u00d7 0,60 = 5,40 \u20ac","9 Flaschen kosten 5,40 \u20ac."],antwort:5.40,einheit:"\u20ac",toleranz:0.01},
+// STUFE 0 EH
+{stufe:0,fach:"eh",text:"6 Schachteln Pralinen kosten 18,00\u00a0\u20ac. Was kosten 4 Schachteln?",kontext:"Dreisatz: 6 \u2192 18 \u20ac | 1 \u2192 ? | 4 \u2192 ?",formel:"1 Schachtel: 18 \u00f7 6 | 4: 4 \u00d7 3",schritte:["1 Schachtel: 18 \u00f7 6 = 3,00 \u20ac","4 Schachteln: 4 \u00d7 3 = 12,00 \u20ac","4 Schachteln kosten 12,00 \u20ac."],antwort:12,einheit:"\u20ac",toleranz:0.01},
+{stufe:0,fach:"eh",text:"Ein Regal fasst 8 Reihen \u00e0 12 Dosen. Wie viele Dosen passen in 5 Reihen?",kontext:"1 Reihe = 12 Dosen.",formel:"5 Reihen \u00d7 12 Dosen",schritte:["1 Reihe: 12 Dosen","5 Reihen: 5 \u00d7 12 = 60 Dosen","In 5 Reihen passen 60 Dosen."],antwort:60,einheit:"Dosen",toleranz:0.5},
+{stufe:0,fach:"eh",text:"3\u00a0kg \u00c4pfel kosten 4,50\u00a0\u20ac. Was kosten 5\u00a0kg?",kontext:"Dreisatz: 3 kg \u2192 4,50 \u20ac | 1 kg \u2192 ? | 5 kg \u2192 ?",formel:"1 kg: 4,50 \u00f7 3 | 5 kg: 5 \u00d7 1,50",schritte:["1 kg: 4,50 \u00f7 3 = 1,50 \u20ac","5 kg: 5 \u00d7 1,50 = 7,50 \u20ac","5 kg kosten 7,50 \u20ac."],antwort:7.50,einheit:"\u20ac",toleranz:0.01},
+{stufe:0,fach:"eh",text:"Pro Stunde werden 45 Kunden bedient. Wie viele in 4 Stunden?",kontext:"Proportional: Zeit \u00d7 Kunden/h.",formel:"4 \u00d7 45",schritte:["1 h: 45 Kunden","4 h: 4 \u00d7 45 = 180 Kunden","In 4 Stunden: 180 Kunden."],antwort:180,einheit:"Kunden",toleranz:0.5},
+{stufe:0,fach:"eh",text:"Ein Kassierer scannt in 5 Minuten 40 Artikel. Wie viele in 8 Minuten?",kontext:"Proportional: Zeit \u00d7 Artikel/min.",formel:"1 min: 40 \u00f7 5 | 8 min: 8 \u00d7 8",schritte:["1 min: 40 \u00f7 5 = 8 Artikel","8 min: 8 \u00d7 8 = 64 Artikel","In 8 Minuten: 64 Artikel."],antwort:64,einheit:"Artikel",toleranz:0.5},
+// STUFE 1 BFS1
+{stufe:1,fach:"bfs1",text:"Ein Drucker druckt 12 Seiten in 4 Minuten. Wie lange dauert es f\u00fcr 42 Seiten?",kontext:"12 Seiten \u2192 4 min | 1 Seite \u2192 ? | 42 Seiten \u2192 ?",formel:"1 Seite: 4 \u00f7 12 | 42: 42 \u00d7 (4\u00f712)",schritte:["1 Seite: 4 \u00f7 12 = 1/3 min","42 Seiten: 42 \u00d7 (1/3) = 14 min","Der Drucker braucht 14 Minuten."],antwort:14,einheit:"Minuten",toleranz:0.1},
+{stufe:1,fach:"bfs1",text:"2,5\u00a0kg K\u00e4se kosten 8,75\u00a0\u20ac. Was kostet 1,8\u00a0kg?",kontext:"2,5 kg \u2192 8,75 \u20ac | 1 kg \u2192 ? | 1,8 kg \u2192 ?",formel:"1 kg: 8,75 \u00f7 2,5 | 1,8 kg: 1,8 \u00d7 3,50",schritte:["1 kg: 8,75 \u00f7 2,5 = 3,50 \u20ac","1,8 kg: 1,8 \u00d7 3,50 = 6,30 \u20ac","1,8 kg K\u00e4se kosten 6,30 \u20ac."],antwort:6.30,einheit:"\u20ac",toleranz:0.01},
+{stufe:1,fach:"bfs1",text:"Ein Auto verbraucht auf 100\u00a0km genau 7,5\u00a0Liter. Wie viel f\u00fcr 240\u00a0km?",kontext:"100 km \u2192 7,5 L | 1 km \u2192 ? | 240 km \u2192 ?",formel:"1 km: 7,5 \u00f7 100 | 240 km: 240 \u00d7 0,075",schritte:["1 km: 7,5 \u00f7 100 = 0,075 L","240 km: 240 \u00d7 0,075 = 18 L","Das Auto braucht 18 Liter."],antwort:18,einheit:"Liter",toleranz:0.05},
+{stufe:1,fach:"bfs1",text:"4 Arbeiter ben\u00f6tigen 9 Tage. Wie lange brauchen 6 Arbeiter? (antiproportional)",kontext:"Mehr Arbeiter \u2192 weniger Tage. Auf 1 Arbeiter: multiplizieren!",formel:"1 Arbeiter: 4 \u00d7 9 = 36 | 6 Arbeiter: 36 \u00f7 6",schritte:["1 Arbeiter: 4 \u00d7 9 = 36 Tage","6 Arbeiter: 36 \u00f7 6 = 6 Tage","6 Arbeiter brauchen 6 Tage."],antwort:6,einheit:"Tage",toleranz:0.1},
+{stufe:1,fach:"bfs1",text:"Eine Pumpe f\u00fcllt einen Teich in 8 Stunden. Wie lange brauchen 3 Pumpen? (antiproportional)",kontext:"Mehr Pumpen \u2192 weniger Zeit.",formel:"1 Pumpe: 8 h | 3 Pumpen: 8 \u00f7 3",schritte:["1 Pumpe: 8 h","3 Pumpen: 8 \u00f7 3 \u2248 2,67 h","3 Pumpen brauchen ca. 2,67 Stunden."],antwort:2.67,einheit:"Stunden",toleranz:0.05},
+// STUFE 1 EH
+{stufe:1,fach:"eh",text:"Ein B\u00e4cker backt 60 Br\u00f6tchen in 45 Minuten. Wie viele in 75 Minuten?",kontext:"45 min \u2192 60 Br\u00f6tchen | 1 min \u2192 ? | 75 min \u2192 ?",formel:"1 min: 60 \u00f7 45 | 75 min: 75 \u00d7 (60\u00f745)",schritte:["1 min: 60 \u00f7 45 = 4/3","75 min: 75 \u00d7 (4/3) = 100 Br\u00f6tchen","In 75 Minuten: 100 Br\u00f6tchen."],antwort:100,einheit:"Br\u00f6tchen",toleranz:0.5},
+{stufe:1,fach:"eh",text:"15 Kisten Wasser kosten 67,50\u00a0\u20ac. Was kosten 22 Kisten?",kontext:"15 Kisten \u2192 67,50 \u20ac | 1 \u2192 ? | 22 \u2192 ?",formel:"1 Kiste: 67,50 \u00f7 15 | 22: 22 \u00d7 4,50",schritte:["1 Kiste: 67,50 \u00f7 15 = 4,50 \u20ac","22 Kisten: 22 \u00d7 4,50 = 99,00 \u20ac","22 Kisten kosten 99,00 \u20ac."],antwort:99,einheit:"\u20ac",toleranz:0.01},
+{stufe:1,fach:"eh",text:"3 Verk\u00e4uferinnen verpacken 240 Artikel/h. Wie viele verpacken 5 Personen?",kontext:"3 Personen \u2192 240 | 1 \u2192 ? | 5 \u2192 ?",formel:"1 Person: 240 \u00f7 3 | 5: 5 \u00d7 80",schritte:["1 Person: 240 \u00f7 3 = 80 Artikel","5 Personen: 5 \u00d7 80 = 400 Artikel","5 Verk\u00e4uferinnen: 400 Artikel."],antwort:400,einheit:"Artikel",toleranz:0.5},
+{stufe:1,fach:"eh",text:"Vorrat reicht bei 50 Kunden/Tag f\u00fcr 12 Tage. Wie lange bei 80 Kunden/Tag? (antiproportional)",kontext:"Mehr Kunden \u2192 Vorrat geht schneller zu Ende.",formel:"Gesamt: 12 \u00d7 50 = 600 | 80 Kunden: 600 \u00f7 80",schritte:["Gesamtvorrat: 12 \u00d7 50 = 600 Einheiten","Bei 80/Tag: 600 \u00f7 80 = 7,5 Tage","Vorrat reicht 7,5 Tage."],antwort:7.5,einheit:"Tage",toleranz:0.1},
+{stufe:1,fach:"eh",text:"120 Artikel kosten 480\u00a0\u20ac. Was kosten 85 Artikel?",kontext:"Dreisatz: 120 \u2192 480 \u20ac | 1 \u2192 ? | 85 \u2192 ?",formel:"1 Artikel: 480 \u00f7 120 | 85: 85 \u00d7 4",schritte:["1 Artikel: 480 \u00f7 120 = 4,00 \u20ac","85 Artikel: 85 \u00d7 4 = 340,00 \u20ac","85 Artikel kosten 340,00 \u20ac."],antwort:340,einheit:"\u20ac",toleranz:0.01},
+// STUFE 2 BFS1
+{stufe:2,fach:"bfs1",text:"Ein Zug f\u00e4hrt 360\u00a0km in 3\u00a0h. Wie lange f\u00fcr 510\u00a0km?",kontext:"Tempo = Strecke \u00f7 Zeit.",formel:"Tempo: 360 \u00f7 3 = 120 km/h | Zeit: 510 \u00f7 120",schritte:["Tempo: 360 \u00f7 3 = 120 km/h","Zeit f\u00fcr 510 km: 510 \u00f7 120 = 4,25 h","Der Zug braucht 4,25 Stunden."],antwort:4.25,einheit:"Stunden",toleranz:0.05},
+{stufe:2,fach:"bfs1",text:"6 Maschinen produzieren in 8\u00a0h 1.440\u00a0Teile. Wie viele produzieren 9 Maschinen in 5\u00a0h?",kontext:"1 Maschine, 1 h: 1.440 \u00f7 6 \u00f7 8. Dann \u00d7 9 \u00d7 5.",formel:"1M, 1h: 1.440\u00f76\u00f78 | 9M, 5h: \u00d79\u00d75",schritte:["1 Maschine, 8 h: 1.440 \u00f7 6 = 240","1 Maschine, 1 h: 240 \u00f7 8 = 30 Teile","9 Maschinen, 5 h: 9 \u00d7 5 \u00d7 30 = 1.350 Teile"],antwort:1350,einheit:"Teile",toleranz:1},
+{stufe:2,fach:"bfs1",text:"Ein Rezept f\u00fcr 6 Personen braucht 450\u00a0g Mehl. Wie viel f\u00fcr 10 Personen?",kontext:"6 Personen \u2192 450 g | 1 \u2192 ? | 10 \u2192 ?",formel:"1 Person: 450 \u00f7 6 | 10: 10 \u00d7 75",schritte:["1 Person: 450 \u00f7 6 = 75 g","10 Personen: 10 \u00d7 75 = 750 g","F\u00fcr 10 Personen: 750 g Mehl."],antwort:750,einheit:"g",toleranz:0.5},
+{stufe:2,fach:"bfs1",text:"5 Bauarbeiter brauchen 12 Tage. Nach 4 Tagen kommt ein 6. Arbeiter. Wie viele Tage dauert es noch?",kontext:"Gesamtarbeit \u2013 geleistete Arbeit = Rest. Rest \u00f7 6 Arbeiter.",formel:"Gesamt: 5\u00d712=60 | Rest: 60\u221220=40 | 6 MA: 40\u00f76",schritte:["Gesamtarbeit: 5 \u00d7 12 = 60 AT","Geleistet: 5 \u00d7 4 = 20 AT","Rest: 60 \u2212 20 = 40 AT","6 Arbeiter: 40 \u00f7 6 \u2248 6,67 Tage","Es dauert noch ca. 6,67 Tage."],antwort:6.67,einheit:"Tage",toleranz:0.1},
+{stufe:2,fach:"bfs1",text:"4 Pumpen leeren einen Tank in 10 Minuten. Wie lange brauchen 7 Pumpen? (antiproportional)",kontext:"Mehr Pumpen \u2192 weniger Zeit.",formel:"1 Pumpe: 4 \u00d7 10 = 40 min | 7 Pumpen: 40 \u00f7 7",schritte:["1 Pumpe: 4 \u00d7 10 = 40 min","7 Pumpen: 40 \u00f7 7 \u2248 5,71 min","7 Pumpen brauchen ca. 5,71 Minuten."],antwort:5.71,einheit:"Minuten",toleranz:0.05},
+// STUFE 2 EH
+{stufe:2,fach:"eh",text:"360 Pakete Kaffee reichen f\u00fcr 4 Wochen. Wie viele f\u00fcr 7 Wochen?",kontext:"4 Wochen \u2192 360 | 1 Woche \u2192 ? | 7 Wochen \u2192 ?",formel:"1 Woche: 360 \u00f7 4 | 7: 7 \u00d7 90",schritte:["1 Woche: 360 \u00f7 4 = 90 Pakete","7 Wochen: 7 \u00d7 90 = 630 Pakete","F\u00fcr 7 Wochen: 630 Pakete."],antwort:630,einheit:"Pakete",toleranz:0.5},
+{stufe:2,fach:"eh",text:"240 Artikel ergaben 1.560\u00a0\u20ac Umsatz. Wie hoch ist der Umsatz bei 175 Artikeln?",kontext:"240 Artikel \u2192 1.560 \u20ac | 1 \u2192 ? | 175 \u2192 ?",formel:"1 Artikel: 1.560 \u00f7 240 | 175: 175 \u00d7 6,50",schritte:["1 Artikel: 1.560 \u00f7 240 = 6,50 \u20ac","175 Artikel: 175 \u00d7 6,50 = 1.137,50 \u20ac","Umsatz: 1.137,50 \u20ac."],antwort:1137.50,einheit:"\u20ac",toleranz:0.05},
+{stufe:2,fach:"eh",text:"4 Regalauf\u00fcller f\u00fcllen 300 Regalmeter in 5 Stunden. Wie lange brauchen 6 f\u00fcr 400 Regalmeter?",kontext:"1 Person, 1 h. Dann auf 6 Personen und 400 m.",formel:"1P,1h: 300\u00f74\u00f75=15m | 6P: 6\u00d715=90m/h | Zeit: 400\u00f790",schritte:["4P, 5h: 300m \u2192 1P, 1h: 15m","6P, 1h: 90m","Zeit f\u00fcr 400m: 400 \u00f7 90 \u2248 4,44 h"],antwort:4.44,einheit:"Stunden",toleranz:0.05},
+{stufe:2,fach:"eh",text:"Vorrat reicht bei 60 Verk\u00e4ufen/Tag f\u00fcr 20 Tage. Bei Sonderangebot: 150/Tag. Wie lange reicht er? (antiproportional)",kontext:"Mehr Verk\u00e4ufe \u2192 Vorrat geht schneller zu Ende.",formel:"Gesamt: 20 \u00d7 60 = 1.200 | 150/Tag: 1.200 \u00f7 150",schritte:["Gesamtvorrat: 20 \u00d7 60 = 1.200","Bei 150/Tag: 1.200 \u00f7 150 = 8 Tage","Vorrat reicht 8 Tage."],antwort:8,einheit:"Tage",toleranz:0.1},
+{stufe:2,fach:"eh",text:"500 Artikel: Einkauf 1.750\u00a0\u20ac, Verkauf 2.875\u00a0\u20ac. Gewinn pro Artikel?",kontext:"Gewinn = Umsatz \u2212 Einkauf. Pro Artikel: Gewinn \u00f7 500.",formel:"Gewinn: 2.875\u22121.750 | pro St.: \u00f7 500",schritte:["Gewinn: 2.875 \u2212 1.750 = 1.125 \u20ac","Pro Artikel: 1.125 \u00f7 500 = 2,25 \u20ac","Gewinn: 2,25 \u20ac pro Artikel."],antwort:2.25,einheit:"\u20ac",toleranz:0.01},
+// STUFE 3 BFS1
+{stufe:3,fach:"bfs1",text:"8 Maschinen produzieren in 6\u00a0h 1.920\u00a0Teile. Wie viele Maschinen f\u00fcr 1.200\u00a0Teile in 4\u00a0h?",kontext:"1 Maschine, 1 h. Dann: 1.200 Teile \u00f7 (4 h \u00d7 Einheitswert).",formel:"1M,1h: 1.920\u00f78\u00f76=40 | Maschinen: 1.200\u00f7(4\u00d740)",schritte:["1M, 1h: 1.920\u00f78\u00f76 = 40 Teile","In 4h: 1M \u2192 160 Teile","Maschinen: 1.200\u00f7160 = 7,5 \u2192 8 Maschinen"],antwort:8,einheit:"Maschinen",toleranz:0.5},
+{stufe:3,fach:"bfs1",text:"Ein Auto f\u00e4hrt mit 90\u00a0km/h und braucht 4\u00a0h. Wie lange mit 120\u00a0km/h? (antiproportional)",kontext:"Strecke ist konstant. H\u00f6here Geschwindigkeit \u2192 weniger Zeit.",formel:"Strecke: 90 \u00d7 4 = 360 km | Zeit: 360 \u00f7 120",schritte:["Strecke: 90 \u00d7 4 = 360 km","Zeit bei 120 km/h: 360 \u00f7 120 = 3 h","Mit 120 km/h: 3 Stunden."],antwort:3,einheit:"Stunden",toleranz:0.05},
+{stufe:3,fach:"bfs1",text:"3 Kr\u00e4ne entladen ein Schiff in 12\u00a0h. Wie lange braucht 1 Kran? (antiproportional)",kontext:"Weniger Kr\u00e4ne \u2192 mehr Zeit.",formel:"1 Kran: 3 \u00d7 12",schritte:["1 Kran: 3 \u00d7 12 = 36 Stunden","Ein Kran braucht 36 Stunden."],antwort:36,einheit:"Stunden",toleranz:0.1},
+{stufe:3,fach:"bfs1",text:"7 Maschinen produzieren 840 Artikel/Tag. 2 fallen aus. Wie viele Artikel noch?",kontext:"7 Maschinen \u2192 840 | 1 \u2192 ? | 5 \u2192 ?",formel:"1M: 840 \u00f7 7 | 5M: 5 \u00d7 120",schritte:["1 Maschine: 840 \u00f7 7 = 120","5 Maschinen: 5 \u00d7 120 = 600 Artikel","Noch 600 Artikel/Tag."],antwort:600,einheit:"Artikel",toleranz:0.5},
+{stufe:3,fach:"bfs1",text:"10 Mitarbeiter, 18 Tage Projekt. Nach 6 Tagen: 4 MA weg. Wie lange noch? (antiproportional)",kontext:"Gesamtarbeit \u2212 geleistete = Rest. Rest \u00f7 6 MA.",formel:"Gesamt: 10\u00d718=180 | Rest: 120 | 6MA: 120\u00f76",schritte:["Gesamt: 10\u00d718 = 180 AT","Geleistet: 10\u00d76 = 60 AT","Rest: 120 AT","6 MA: 120\u00f76 = 20 Tage","Noch 20 Tage."],antwort:20,einheit:"Tage",toleranz:0.1},
+// STUFE 3 EH
+{stufe:3,fach:"eh",text:"350 Artikel/Woche. Ziel: 1.260 in 3 Wochen. Um wie viel muss der Absatz steigen?",kontext:"Ziel/Woche berechnen, dann Differenz.",formel:"Ziel: 1.260\u00f73 | Steigerung: 420\u2212350",schritte:["Ziel/Woche: 1.260 \u00f7 3 = 420","Steigerung: 420 \u2212 350 = 70","70 Artikel mehr pro Woche."],antwort:70,einheit:"Artikel",toleranz:0.5},
+{stufe:3,fach:"eh",text:"6 Kassen \u00e0 40 Kunden/h. Bei Hochbetrieb 300 Kunden/h. Wie viele Kassen?",kontext:"1 Kasse \u2192 40 Kunden | ? Kassen \u2192 300 Kunden.",formel:"300 \u00f7 40 = 7,5 \u2192 8 Kassen",schritte:["1 Kasse: 40 Kunden/h","F\u00fcr 300: 300\u00f740 = 7,5 \u2192 8 Kassen","8 Kassen m\u00fcssen ge\u00f6ffnet sein."],antwort:8,einheit:"Kassen",toleranz:0.5},
+{stufe:3,fach:"eh",text:"Vorrat f\u00fcr 30 Normaltage. Weihnachten: 5 Tage doppelter Verbrauch, dann normal. Wie viele Tage ab Weihnachten?",kontext:"5 Weihnachtstage = 10 Normaltage. Dann 20 Normaltage.",formel:"5 Tage\u00d72 = 10 | Rest: 30\u221210=20 | Gesamt: 25",schritte:["Weihnachten: 5\u00d72 = 10 Normaleinheiten","Rest: 30\u221210 = 20 Normaleinheiten","Gesamt ab Weihnachten: 5+20 = 25 Tage"],antwort:25,einheit:"Tage",toleranz:0.5},
+{stufe:3,fach:"eh",text:"5 Mitarbeiter verr\u00e4umen 450 Artikel in 3\u00a0h. 3 Personen krank. Wie lange f\u00fcr 600 Artikel?",kontext:"1P, 1h. Dann 3 Personen f\u00fcr 600 Artikel.",formel:"1P,1h: 450\u00f75\u00f73=30 | 3P: 90/h | 600\u00f790",schritte:["1P, 1h: 450\u00f75\u00f73 = 30 Artikel","3P, 1h: 90 Artikel","600 Artikel: 600\u00f790 \u2248 6,67 h"],antwort:6.67,einheit:"Stunden",toleranz:0.05},
+{stufe:3,fach:"eh",text:"200 Artikel gekauft f\u00fcr 1.600\u00a0\u20ac. 80\u00a0% zu 12\u00a0\u20ac, Rest zum halben Preis. Gesamtgewinn?",kontext:"Umsatz berechnen, dann Einkauf abziehen.",formel:"160\u00d712 + 40\u00d76 \u2212 1.600",schritte:["80% von 200 = 160 Artikel zu 12\u20ac: 1.920\u20ac","40 Artikel zu 6\u20ac: 240\u20ac","Umsatz: 2.160\u20ac","Gewinn: 2.160 \u2212 1.600 = 560\u20ac"],antwort:560,einheit:"\u20ac",toleranz:0.01}
+];
+
+const SK='mathe-dreisatz-v1';
+let S={punkte:0,levelDone:[false,false,false,false],stufe:0,aufgIdx:0,fehler:0,filter:'all',examIdx:0,examAnts:[]};
+function loadS(){try{const d=JSON.parse(localStorage.getItem(SK)||'{}');if(d.punkte!==undefined)S.punkte=d.punkte;if(d.levelDone!==undefined)S.levelDone=d.levelDone;}catch(e){}}
+function saveS(){localStorage.setItem(SK,JSON.stringify({punkte:S.punkte,levelDone:S.levelDone}));}
+function aufgaben(s){return AUFGABEN.filter(a=>{if(a.stufe!==s)return false;if(S.filter==='all')return true;if(S.filter==='bfs1')return a.fach==='bfs1'||a.fach==='beide';return a.fach==='eh'||a.fach==='beide';});}
+function fmtNum(n){return n.toLocaleString('de-DE',{minimumFractionDigits:0,maximumFractionDigits:2});}
+function parseDE(s){return parseFloat(String(s).replace(',','.').replace(/\s/g,''));}
+function fachBadge(f){if(f==='bfs1')return '<span class="task-fach-badge tfb-bfs1">BFS 1</span>';if(f==='eh')return '<span class="task-fach-badge tfb-eh">Einzelhandel</span>';return '<span class="task-fach-badge tfb-beide">Beide</span>';}
+function setFilter(f){S.filter=f;S.aufgIdx=0;S.fehler=0;['all','bfs1','eh'].forEach(id=>{const b=document.getElementById('f-'+id);b.className='filter-btn'+(id===f?' active-'+id:'');});selectLevel(S.stufe);}
+function switchMode(m){const lp=document.getElementById('panel-learn'),ep=document.getElementById('panel-exam'),bl=document.getElementById('btn-learn'),be=document.getElementById('btn-exam');if(m==='learn'){lp.classList.remove('hidden');ep.classList.add('hidden');bl.classList.add('active');be.classList.remove('active');bl.setAttribute('aria-selected','true');be.setAttribute('aria-selected','false');}else{ep.classList.remove('hidden');lp.classList.add('hidden');be.classList.add('active');bl.classList.remove('active');be.setAttribute('aria-selected','true');bl.setAttribute('aria-selected','false');document.getElementById('exam-start').classList.remove('hidden');document.getElementById('exam-area').classList.add('hidden');document.getElementById('exam-result').classList.add('hidden');}}
+function selectLevel(s){S.stufe=s;S.aufgIdx=0;S.fehler=0;for(let i=0;i<4;i++){const b=document.getElementById('lvl-'+i);b.classList.toggle('active',i===s);b.classList.toggle('done',S.levelDone[i]);}renderLearn();updateProgress();}
+function renderLearn(){const area=document.getElementById('task-area');const liste=aufgaben(S.stufe);if(liste.length===0){area.innerHTML='<div class="card"><div class="empty-msg">\u2139\ufe0f Keine Aufgaben f\u00fcr diesen Filter.<br><small>W\u00e4hle einen anderen Bildungsgang oder eine andere Stufe.</small></div></div>';return;}if(S.aufgIdx>=liste.length){S.levelDone[S.stufe]=true;saveS();awardBadge(S.stufe);document.getElementById('lvl-'+S.stufe).classList.add('done');area.innerHTML='<div class="card tc"><div style="font-size:2.8rem;margin-bottom:10px">\ud83c\udf89</div><h2 style="color:var(--bfs1);font-size:1rem;margin-bottom:8px">Stufe '+(S.stufe+1)+' abgeschlossen!</h2><p style="font-size:.85rem;color:var(--muted);margin-bottom:18px">Alle '+liste.length+' Aufgaben erledigt.</p>'+(S.stufe<3?'<button class="btn btn-success" onclick="selectLevel('+(S.stufe+1)+')">Weiter zu Stufe '+(S.stufe+2)+' \u2192</button>':'<p style="font-weight:700;color:var(--primary)">Alle Stufen gemeistert! \ud83c\udfc6</p>')+'</div>';return;}const a=liste[S.aufgIdx];const nr=S.aufgIdx+1,ges=liste.length;const sn=['Einstieg','Training','Pr\u00fcfungsvorbereitung','Bonus'][S.stufe];area.innerHTML='<div class="task-card" id="tc"><div class="task-header"><span>Stufe '+(S.stufe+1)+': '+sn+' &nbsp; '+fachBadge(a.fach)+'</span><span style="opacity:.7;font-size:.75rem">'+nr+' / '+ges+'</span></div><div class="task-body"><p class="task-text">'+a.text+'</p>'+(a.kontext?'<div class="task-context">\ud83d\udccc '+a.kontext+'</div>':'')+'<div class="input-row"><input type="number" step="0.01" inputmode="decimal" class="task-input" id="ans-inp" placeholder="Deine Antwort" aria-label="Antwort eingeben" onkeydown="if(event.key===\'Enter\')checkLearn()"><span class="unit">'+a.einheit+'</span></div><div class="btn-row"><button class="btn btn-primary btn-sm" onclick="checkLearn()">Pr\u00fcfen</button><button class="btn btn-hint btn-sm" id="hint-btn" onclick="showHint()">\ud83d\udca1 Tipp</button><button class="btn btn-hint btn-sm" onclick="useCalcResult(\'ans-inp\')">\u2190 \u00dcbernehmen</button></div><div class="hint-box" id="hint-box"><strong>Tipp</strong>Rechenweg: <strong>'+a.formel+'</strong></div><div class="feedback-box" id="fb"></div><div class="solution-box" id="sol"><strong>Rechenweg</strong>'+a.schritte.map((s,i)=>'<div class="step"><span class="step-nr">'+(i+1)+'.</span><span>'+s+'</span></div>').join('')+'</div></div><div class="task-nav"><span class="task-counter">Punkte: '+S.punkte+'</span><button class="btn btn-hint btn-sm" id="next-btn" onclick="nextLearn()" style="display:none">Weiter \u2192</button></div></div>';setTimeout(()=>{const i=document.getElementById('ans-inp');if(i)i.focus();},80);}
+function checkLearn(){const liste=aufgaben(S.stufe),a=liste[S.aufgIdx];const inp=document.getElementById('ans-inp'),fb=document.getElementById('fb'),sol=document.getElementById('sol'),next=document.getElementById('next-btn');const tol=a.toleranz||0.05;if(!inp||inp.value.trim()===''){fb.className='feedback-box wrong';fb.innerHTML='<strong>\u26a0\ufe0f Bitte eine Zahl eingeben.</strong>';return;}const val=parseDE(inp.value),ok=Math.abs(val-a.antwort)<=tol;inp.classList.remove('correct','wrong');if(ok){inp.classList.add('correct');fb.className='feedback-box correct';fb.innerHTML='<strong>\u2705 Richtig!</strong> '+fmtNum(a.antwort)+' '+a.einheit;sol.classList.add('visible');next.style.display='inline-flex';inp.disabled=true;document.getElementById('hint-btn').disabled=true;const pkt=S.fehler===0?10:S.fehler===1?5:2;S.punkte+=pkt;saveS();updateUI();}else{S.fehler++;inp.classList.add('wrong');fb.className='feedback-box wrong';if(S.fehler===1){fb.innerHTML='<strong>\u274c Noch nicht ganz.</strong> Schau dir den Tipp an.';showHint();}else{fb.innerHTML='<strong>\u274c Leider falsch.</strong> L\u00f6sung: '+fmtNum(a.antwort)+' '+a.einheit;sol.classList.add('visible');next.style.display='inline-flex';inp.disabled=true;}}}
+function showHint(){const h=document.getElementById('hint-box');if(h)h.classList.add('visible');}
+function nextLearn(){S.aufgIdx++;S.fehler=0;renderLearn();updateProgress();}
+function examPool(){const pool=[];[0,1,2,3].forEach(st=>{const l=aufgaben(st);pool.push(...l.slice(0,st<2?3:2));});return pool.slice(0,10);}
+function startExam(){S.examIdx=0;S.examAnts=[];document.getElementById('exam-start').classList.add('hidden');document.getElementById('exam-area').classList.remove('hidden');document.getElementById('exam-result').classList.add('hidden');buildCalcInto('calc-panel-exam');renderExam();}
+function renderExam(){const slot=document.getElementById('exam-task-slot');const liste=examPool();if(S.examIdx>=liste.length){showResult();return;}const a=liste[S.examIdx],nr=S.examIdx+1,ges=liste.length;slot.innerHTML='<div class="task-card"><div class="task-header"><span>Pr\u00fcfungsmodus &nbsp; '+fachBadge(a.fach)+'</span><span style="opacity:.7;font-size:.75rem">'+nr+' / '+ges+'</span></div><div class="task-body"><p class="task-text">'+a.text+'</p><div class="input-row"><input type="number" step="0.01" inputmode="decimal" class="task-input" id="exam-inp" placeholder="Deine Antwort" onkeydown="if(event.key===\'Enter\')submitExam()"><span class="unit">'+a.einheit+'</span></div><div class="btn-row"><button class="btn btn-primary btn-sm" onclick="submitExam()">'+( nr<ges?'Weiter \u2192':'Auswertung \u2192')+'</button><button class="btn btn-hint btn-sm" onclick="useCalcResult(\'exam-inp\')">\u2190 \u00dcbernehmen</button></div></div><div class="task-nav"><div style="flex:1;background:var(--border);border-radius:99px;height:5px;overflow:hidden"><div style="height:5px;border-radius:99px;background:var(--accent);width:'+((nr-1)/ges*100)+'%;transition:width .3s"></div></div></div></div>';setTimeout(()=>{const i=document.getElementById('exam-inp');if(i)i.focus();},80);}
+function submitExam(){const liste=examPool(),a=liste[S.examIdx];const inp=document.getElementById('exam-inp');const raw=inp&&inp.value.trim()!==''?parseDE(inp.value):null;const ok=raw!==null&&Math.abs(raw-a.antwort)<=(a.toleranz||0.05);S.examAnts.push({a,val:raw,ok});S.examIdx++;renderExam();}
+function showResult(){document.getElementById('exam-area').classList.add('hidden');const r=document.getElementById('exam-result');r.classList.remove('hidden');const richtig=S.examAnts.filter(x=>x.ok).length,ges=S.examAnts.length,proz=Math.round(richtig/ges*100);document.getElementById('r-score').textContent=richtig+' / '+ges;document.getElementById('r-label').textContent='Aufgaben richtig';document.getElementById('r-bar').style.width=proz+'%';const msgs=[{min:0,t:'\ud83d\udcaa Noch \u00dcbung n\u00f6tig \u2013 starte im Lernmodus!'},{min:50,t:'\ud83d\udc4d Gut! Du bist auf dem richtigen Weg.'},{min:80,t:'\ud83c\udf1f Sehr gut! Fast alles richtig.'},{min:100,t:'\ud83c\udfc6 Perfekt!'}];document.getElementById('r-msg').textContent=msgs.filter(m=>m.min<=proz).pop().t;const sd=document.getElementById('r-sols');sd.innerHTML='<h3 style="font-size:.8rem;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Musterl\u00f6sungen</h3>'+S.examAnts.map((x,i)=>'<div class="sol-item"><span class="sol-icon">'+(x.ok?'\u2705':'\u274c')+'</span><div class="sol-text"><strong>Aufgabe '+(i+1)+': '+(x.ok?'Richtig':'Falsch')+'</strong><span>'+x.a.text.replace(/<[^>]+>/g,'')+'</span>'+((!x.ok)?'<br><span>Deine Antwort: '+(x.val!==null?x.val:'\u2013')+' '+x.a.einheit+'</span>':'')+'<br><span>L\u00f6sung: '+fmtNum(x.a.antwort)+' '+x.a.einheit+'</span><br><small style="color:var(--muted)">'+x.a.schritte[x.a.schritte.length-1]+'</small></div></div>').join('');}
+function restartExam(){document.getElementById('exam-result').classList.add('hidden');document.getElementById('exam-start').classList.remove('hidden');}
+let calcDisplay='',calcLast=null;
+function buildCalcInto(pid){const panel=document.getElementById(pid);if(!panel||panel.dataset.built)return;panel.dataset.built='1';const u=pid;panel.innerHTML='<div class="calc-display"><div class="calc-expr" id="cd-expr-'+u+'"></div><div class="calc-result" id="cd-res-'+u+'">0</div></div><div class="calc-grid"><button class="calc-btn cb-ac" onclick="cAC(\''+u+'\')">AC</button><button class="calc-btn cb-ce" onclick="cCE(\''+u+'\')">&#9003;</button><button class="calc-btn cb-spec" onclick="cKey(\'(\',\''+u+'\')">(</button><button class="calc-btn cb-spec" onclick="cKey(\')\',\''+u+'\')">)</button><button class="calc-btn cb-op" onclick="cKey(\'/\',\''+u+'\')">&#247;</button><button class="calc-btn cb-num" onclick="cKey(\'7\',\''+u+'\')">7</button><button class="calc-btn cb-num" onclick="cKey(\'8\',\''+u+'\')">8</button><button class="calc-btn cb-num" onclick="cKey(\'9\',\''+u+'\')">9</button><button class="calc-btn cb-op" onclick="cKey(\'*\',\''+u+'\')">&#215;</button><button class="calc-btn cb-spec" onclick="cPow(\''+u+'\')">x&#178;</button><button class="calc-btn cb-num" onclick="cKey(\'4\',\''+u+'\')">4</button><button class="calc-btn cb-num" onclick="cKey(\'5\',\''+u+'\')">5</button><button class="calc-btn cb-num" onclick="cKey(\'6\',\''+u+'\')">6</button><button class="calc-btn cb-op" onclick="cKey(\'-\',\''+u+'\')">&#8722;</button><button class="calc-btn cb-spec" onclick="cSqrt(\''+u+'\')">&#8730;</button><button class="calc-btn cb-num" onclick="cKey(\'1\',\''+u+'\')">1</button><button class="calc-btn cb-num" onclick="cKey(\'2\',\''+u+'\')">2</button><button class="calc-btn cb-num" onclick="cKey(\'3\',\''+u+'\')">3</button><button class="calc-btn cb-op" onclick="cKey(\'+\',\''+u+'\')">+</button><button class="calc-btn cb-frac" onclick="cToggleFrac(\''+u+'\')">&#189;</button><button class="calc-btn cb-num" onclick="cKey(\'0\',\''+u+'\')">0</button><button class="calc-btn cb-num" onclick="cKey(\'.\',\''+u+'\')"><strong>,</strong></button><button class="calc-btn cb-spec" onclick="cPct(\''+u+'\')">%</button><button class="calc-btn cb-eq" onclick="cCalc(\''+u+'\')">&#65309;</button></div><div class="frac-area" id="frac-'+u+'"><label>Bruchrechnung</label><div class="frac-row"><input class="frac-input" id="fn1-'+u+'" type="number" placeholder="Z&#228;hler"><span class="frac-divider">&#247;</span><input class="frac-input" id="fd1-'+u+'" type="number" placeholder="Nenner"><select class="frac-op-select" id="fop-'+u+'"><option value="+">+</option><option value="-">&#8722;</option><option value="*">&#215;</option><option value="/">&#247;</option></select><input class="frac-input" id="fn2-'+u+'" type="number" placeholder="Z&#228;hler"><span class="frac-divider">&#247;</span><input class="frac-input" id="fd2-'+u+'" type="number" placeholder="Nenner"></div><button class="calc-btn cb-fracgo" onclick="cFracCalc(\''+u+'\')">Bruch berechnen &#8594;</button></div><button class="calc-use-btn" id="use-btn-'+u+'" onclick="useCalcResult(null,\''+u+'\')" disabled>&#8595; Ergebnis in Aufgabe &#252;bernehmen</button>';}
+function cDisplay(u){const ex=document.getElementById('cd-expr-'+u),rs=document.getElementById('cd-res-'+u);if(ex)ex.textContent=calcDisplay.replace(/\*/g,'×').replace(/\//g,'÷');if(rs)rs.textContent=calcLast!==null?fmtNum(calcLast):calcDisplay||'0';}
+function cKey(k,u){if(k==='.'){const p=calcDisplay.split(/[\+\-\*\/\(\)]/);if(p[p.length-1].includes('.'))return;}calcDisplay+=k;calcLast=null;cDisplay(u);}
+function cAC(u){calcDisplay='';calcLast=null;cDisplay(u);}
+function cCE(u){calcDisplay=calcDisplay.slice(0,-1);calcLast=null;cDisplay(u);}
+function cPow(u){calcDisplay=(calcLast!==null?String(calcLast):calcDisplay)+'**2';cCalc(u);}
+function cSqrt(u){calcDisplay='Math.sqrt('+(calcLast!==null?calcLast:calcDisplay)+')';cCalc(u);}
+function cPct(u){try{const v=Function('"use strict";return ('+calcDisplay+')')();if(!isNaN(v)){calcDisplay=String(v/100);calcLast=v/100;cDisplay(u);}}catch(e){}}
+function cCalc(u){try{const r=Function('"use strict";return ('+calcDisplay+')')();if(typeof r==='number'&&isFinite(r)){calcLast=Math.round(r*1e8)/1e8;calcDisplay=String(calcLast);}else calcLast=null;}catch(e){calcLast=null;}cDisplay(u);const ub=document.getElementById('use-btn-'+u);if(ub)ub.disabled=(calcLast===null);}
+function cToggleFrac(u){const fa=document.getElementById('frac-'+u);if(fa)fa.classList.toggle('open');}
+function cFracCalc(u){const n1=parseFloat(document.getElementById('fn1-'+u).value)||0,d1=parseFloat(document.getElementById('fd1-'+u).value)||1,op=document.getElementById('fop-'+u).value,n2=parseFloat(document.getElementById('fn2-'+u).value)||0,d2=parseFloat(document.getElementById('fd2-'+u).value)||1;const v1=n1/d1,v2=n2/d2;let res;if(op==='+')res=v1+v2;else if(op==='-')res=v1-v2;else if(op==='*')res=v1*v2;else res=d2===0?NaN:v1/v2;if(isFinite(res)){calcLast=Math.round(res*1e8)/1e8;calcDisplay=String(calcLast);}cDisplay(u);const ub=document.getElementById('use-btn-'+u);if(ub)ub.disabled=(calcLast===null);}
+function useCalcResult(inputId,uid){if(calcLast===null)return;if(inputId){const el=document.getElementById(inputId);if(el){el.value=String(calcLast).replace('.',',');el.focus();}return;}for(const id of['ans-inp','exam-inp']){const el=document.getElementById(id);if(el&&!el.disabled){el.value=String(calcLast).replace('.',',');el.focus();break;}}}
+function toggleCalc(btn){const pid=btn.getAttribute('aria-controls'),panel=document.getElementById(pid);const open=panel.classList.contains('open');if(!open)buildCalcInto(pid);panel.classList.toggle('open',!open);btn.setAttribute('aria-expanded',String(!open));btn.querySelector('.calc-arrow').style.transform=open?'':'rotate(180deg)';}
+function awardBadge(s){const el=document.getElementById('b'+(s+1));if(el&&el.classList.contains('locked')){el.classList.replace('locked','earned');el.style.transform='scale(1.5)';setTimeout(()=>el.style.transform='',400);}}
+function updateUI(){const p=S.punkte;document.getElementById('pts-display').textContent=p+' Punkte';document.getElementById('hdr-points').textContent='\u2b50 '+p;const ct=document.querySelector('.task-counter');if(ct)ct.textContent='Punkte: '+p;}
+function updateProgress(){const done=S.levelDone.filter(Boolean).length,proz=Math.round(done/4*100);const f=document.getElementById('progress-fill'),w=document.querySelector('[role="progressbar"]');if(f)f.style.width=proz+'%';if(w)w.setAttribute('aria-valuenow',proz);}
+function toggleAcc(btn){const body=document.getElementById(btn.getAttribute('aria-controls')),isOpen=btn.getAttribute('aria-expanded')==='true';btn.setAttribute('aria-expanded',String(!isOpen));body.classList.toggle('open',!isOpen);btn.querySelector('.arrow').textContent=isOpen?'\u25bc':'\u25b2';}
+function toggleTeacher(){const p=document.getElementById('teacher-panel'),b=document.querySelector('.teacher-toggle'),open=p.style.display==='block';p.style.display=open?'none':'block';b.setAttribute('aria-expanded',String(!open));b.textContent=open?'F\u00fcr Lehrkr\u00e4fte \u25be':'F\u00fcr Lehrkr\u00e4fte \u25b4';if(!open)buildTeacherTable();}
+function buildTeacherTable(){const tb=document.getElementById('teacher-tbody');if(!tb||tb.children.length)return;const sn=['Einstieg','Training','Pr\u00fcfung','Bonus'],fn={bfs1:'BFS 1',eh:'Einzelhandel',beide:'Beide'};AUFGABEN.forEach((a,i)=>{const tr=document.createElement('tr');tr.innerHTML='<td>'+(i+1)+'</td><td>'+sn[a.stufe]+'</td><td>'+fn[a.fach]+'</td><td>'+a.text.replace(/<[^>]+>/g,'').substring(0,55)+'\u2026</td><td><strong>'+fmtNum(a.antwort)+' '+a.einheit+'</strong></td>';tb.appendChild(tr);});}
+function resetApp(){if(confirm('Lernstand f\u00fcr Dreisatz zur\u00fccksetzen?')){localStorage.removeItem(SK);location.reload();}}
+loadS();
+S.levelDone.forEach((done,i)=>{if(done){const el=document.getElementById('b'+(i+1));if(el)el.classList.replace('locked','earned');const lb=document.getElementById('lvl-'+i);if(lb)lb.classList.add('done');}});
+updateUI();updateProgress();buildCalcInto('calc-panel-learn');selectLevel(0);
+</script>
+</body>
+</html>
